@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSG学習アプリ｜管理</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --navy:#2B4A63; --navy-deep:#21384C; --navy-card:#34536D; --navy-line:#45637B;
+    --orange:#F4A024; --orange-text:#6E4905; --ink:#21384C; --muted:#B9C7D4; --muted2:#8FA3B5;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    background:var(--navy-deep); color:#fff; min-height:100vh;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 16px 60px;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--navy);
+    position:sticky; top:0; z-index:5; border-bottom:1px solid var(--navy-line);}
+  .topbar .logo{font-size:16px; font-weight:600;}
+  .topbar .logo .arw{color:var(--orange);}
+  h2{font-size:17px; font-weight:600; margin:28px 0 12px; display:flex; align-items:center; gap:8px;}
+  h2 i{color:var(--orange);}
+  .card{background:var(--navy); border:1px solid var(--navy-line); border-radius:14px; padding:18px; margin-bottom:14px;}
+  label{font-size:13px; color:var(--muted); display:block; margin:10px 0 4px;}
+  input, select, textarea{width:100%; border-radius:10px; border:1px solid var(--navy-line); padding:10px 12px;
+    font-size:15px; background:#fff; color:var(--ink); font-family:inherit;}
+  textarea{min-height:120px; resize:vertical; line-height:1.6;}
+  .row{display:flex; gap:10px;}
+  .row > div{flex:1;}
+  .btn{background:var(--orange); color:var(--ink); border:none; border-radius:10px; padding:12px 18px;
+    font-size:15px; font-weight:700; cursor:pointer;}
+  .btn:active{transform:scale(.99);} .btn[disabled]{opacity:.5;}
+  .btn.sub{background:transparent; color:#fff; border:1px solid var(--navy-line); font-weight:400;}
+  .tabs{display:flex; gap:8px; margin-bottom:12px;}
+  .tab{flex:1; text-align:center; padding:10px; border-radius:10px; border:1px solid var(--navy-line);
+    background:transparent; color:var(--muted); cursor:pointer; font-size:14px;}
+  .tab.on{background:var(--navy-deep); border-color:var(--orange); color:#fff; font-weight:600;}
+  .pane{display:none;} .pane.on{display:block;}
+  .ttab{flex:1; text-align:center; padding:10px; border-radius:10px; border:1px solid var(--navy-line);
+    background:transparent; color:var(--muted); cursor:pointer; font-size:14px;}
+  .ttab.on{background:var(--navy-deep); border-color:var(--orange); color:#fff; font-weight:600;}
+  .tpane{display:none;} .tpane.on{display:block;}
+  .copt{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .copt input[type=radio]{width:18px; height:18px; flex:none; accent-color:var(--orange);}
+  .copt input[type=text]{flex:1;}
+  .msg{font-size:13px; margin-top:10px; min-height:18px;}
+  .msg.ok{color:#A6E3C8;} .msg.err{color:#FFB4A8;}
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th,td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--navy-line);}
+  th{color:var(--muted); font-weight:500; font-size:12px;}
+  td .pt{color:var(--orange); font-weight:600;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .chip{background:var(--navy-deep); border:1px solid var(--navy-line); border-radius:999px; padding:6px 12px; font-size:13px;}
+  .chip b{color:var(--orange);}
+  .hint{font-size:12px; color:var(--muted2); margin-top:6px;}
+  /* login */
+  #login{max-width:360px; margin:60px auto 0; padding:0 16px;}
+  #login .badge{width:72px; height:72px; border-radius:20px; background:var(--orange);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+  #login .badge i{font-size:38px; color:var(--navy-deep);}
+  #login h1{font-size:20px; font-weight:600; text-align:center; margin:0 0 24px;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<!-- ログイン -->
+<div id="login">
+  <div class="badge"><i class="ti ti-shield-lock"></i></div>
+  <h1>SSG学習アプリ｜管理</h1>
+  <label>管理者ID</label>
+  <input type="text" id="inId" autocapitalize="off" placeholder="例 admin">
+  <label>PIN / パスワード</label>
+  <input type="password" id="inPin" placeholder="••••••">
+  <div class="msg err" id="loginErr"></div>
+  <button class="btn" id="btnLogin" style="width:100%; margin-top:6px;">ログイン</button>
+</div>
+
+<!-- 管理画面 -->
+<div id="admin" class="hidden">
+  <div class="topbar">
+    <span class="logo"><span class="arw">↗</span> SSG学習｜管理</span>
+    <button class="btn sub" id="btnLogout" style="padding:8px 14px; font-size:13px;">ログアウト</button>
+  </div>
+  <div class="wrap">
+
+    <h2><i class="ti ti-plus"></i> 問題・単語を登録</h2>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>教科</label>
+          <select id="selSubject"></select>
+        </div>
+        <div>
+          <label>学年</label>
+          <select id="selGrade">
+            <option value="中1">中1</option>
+            <option value="中2">中2</option>
+            <option value="中3">中3</option>
+          </select>
+        </div>
+      </div>
+      <label>単元（例：中1単語、Unit3 など）</label>
+      <input type="text" id="inUnit" value="中1単語">
+
+      <div class="tabs" style="margin-top:16px;">
+        <button class="ttab on" data-type="vocab">英単語型</button>
+        <button class="ttab" data-type="choice">汎用4択型</button>
+      </div>
+
+      <!-- 英単語型（英語向け・誤答は自動生成） -->
+      <div class="tpane on" id="type-vocab">
+        <div class="tabs">
+          <button class="tab on" data-pane="one">1問ずつ</button>
+          <button class="tab" data-pane="csv">CSV一括</button>
+        </div>
+
+        <div class="pane on" id="pane-one">
+          <div class="row">
+            <div>
+              <label>英単語（問題）</label>
+              <input type="text" id="inEn" placeholder="improve">
+            </div>
+            <div>
+              <label>意味（正解）</label>
+              <input type="text" id="inJa" placeholder="向上させる">
+            </div>
+          </div>
+          <button class="btn" id="btnAddOne" style="margin-top:14px;">この1問を追加</button>
+          <div class="msg" id="msgOne"></div>
+          <div class="hint">誤答の選択肢は、同じ教科・学年の他の意味から自動で作られます。</div>
+        </div>
+
+        <div class="pane" id="pane-csv">
+          <label>CSV貼り付け（1行に「英単語,意味」）</label>
+          <textarea id="inCsv" placeholder="apple,りんご&#10;book,本&#10;cat,ねこ"></textarea>
+          <div class="hint">先頭行が「単語,意味」などの見出しなら自動でスキップします。カンマ区切り。</div>
+          <label style="margin-top:12px;">またはCSVファイルを選択</label>
+          <input type="file" id="inFile" accept=".csv,.txt" style="background:transparent; color:var(--muted); border:none; padding:6px 0;">
+          <button class="btn" id="btnAddCsv" style="margin-top:14px;">一括で追加</button>
+          <div class="msg" id="msgCsv"></div>
+        </div>
+      </div>
+
+      <!-- 汎用4択型（数学・理科・社会・英検など・選択肢は自分で指定） -->
+      <div class="tpane" id="type-choice">
+        <label>問題文</label>
+        <input type="text" id="cPrompt" placeholder="例）2x + 3 = 7 のとき x は？">
+        <div class="hint">数学・理科・社会・英検など、選択肢を自分で決める問題用。</div>
+        <label style="margin-top:12px;">選択肢（正解のラジオを選ぶ）</label>
+        <div class="copt"><input type="radio" name="cCorrect" value="0" checked><input type="text" id="cA" placeholder="選択肢1"></div>
+        <div class="copt"><input type="radio" name="cCorrect" value="1"><input type="text" id="cB" placeholder="選択肢2"></div>
+        <div class="copt"><input type="radio" name="cCorrect" value="2"><input type="text" id="cC" placeholder="選択肢3"></div>
+        <div class="copt"><input type="radio" name="cCorrect" value="3"><input type="text" id="cD" placeholder="選択肢4"></div>
+        <label style="margin-top:12px;">解説（任意）</label>
+        <input type="text" id="cExp" placeholder="（任意）">
+        <button class="btn" id="btnAddChoice" style="margin-top:14px;">この1問を追加</button>
+        <div class="msg" id="msgChoice"></div>
+        <div class="hint">登録できますが、その教科を生徒に出題するには「開通（is_active）」が別途必要です。今は英語のみ開通。</div>
+      </div>
+    </div>
+
+    <h2><i class="ti ti-list-numbers"></i> 登録済みの問題数</h2>
+    <div class="card">
+      <div class="chips" id="counts"><span class="hint">読み込み中…</span></div>
+      <button class="btn sub" id="btnReloadCounts" style="margin-top:14px; font-size:13px; padding:8px 14px;">更新</button>
+    </div>
+
+    <h2><i class="ti ti-users"></i> 生徒一覧・ポイント</h2>
+    <div class="card" style="overflow-x:auto;">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>名前</th><th>学年</th><th>合計pt</th><th>連続</th><th>通算</th><th>最終実施</th>
+        </tr></thead>
+        <tbody id="studentRows"><tr><td colspan="7" class="hint">読み込み中…</td></tr></tbody>
+      </table>
+      <button class="btn sub" id="btnReloadStudents" style="margin-top:14px; font-size:13px; padding:8px 14px;">更新</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://ewreqtxpswincicadotj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_K_YR6ghUr13Pn3yqqtvLcQ_xpe8iwCv";
+const EMAIL_DOMAIN = "ssg.local";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+
+let subjects = [];   // {id, slug, name}
+
+// ---------- 起動 ----------
+(async function init(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session && await checkAdmin()){ await enterAdmin(); }
+})();
+
+// ---------- ログイン ----------
+$('btnLogin').addEventListener('click', login);
+$('inPin').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
+
+async function login(){
+  const id = $('inId').value.trim().toLowerCase();
+  const pin = $('inPin').value.trim();
+  $('loginErr').textContent='';
+  if(!id || !pin){ $('loginErr').textContent='IDとPINを入れてください'; return; }
+  $('btnLogin').disabled=true; $('btnLogin').textContent='…';
+  const { error } = await sb.auth.signInWithPassword({ email: id+'@'+EMAIL_DOMAIN, password: pin });
+  $('btnLogin').disabled=false; $('btnLogin').textContent='ログイン';
+  if(error){ $('loginErr').textContent='IDかPINが違います'; return; }
+  if(!await checkAdmin()){
+    $('loginErr').textContent='このアカウントには管理者権限がありません';
+    await sb.auth.signOut();
+    return;
+  }
+  await enterAdmin();
+}
+
+async function checkAdmin(){
+  const { data:{ user } } = await sb.auth.getUser();
+  if(!user) return false;
+  const { data } = await sb.from('admins').select('id').eq('id', user.id).maybeSingle();
+  return !!data;
+}
+
+async function enterAdmin(){
+  $('login').classList.add('hidden');
+  $('admin').classList.remove('hidden');
+  await loadSubjects();
+  await loadCounts();
+  await loadStudents();
+}
+
+$('btnLogout').addEventListener('click', async ()=>{ await sb.auth.signOut(); location.reload(); });
+
+// ---------- 教科 ----------
+async function loadSubjects(){
+  const { data } = await sb.from('subjects').select('id,slug,name').order('sort_order');
+  subjects = data || [];
+  $('selSubject').innerHTML = subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+// ---------- 問題タイプ切替（英単語型／汎用4択型） ----------
+document.querySelectorAll('.ttab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.ttab').forEach(x=>x.classList.toggle('on', x===t));
+    document.querySelectorAll('.tpane').forEach(p=>p.classList.toggle('on', p.id==='type-'+t.dataset.type));
+  });
+});
+
+// ---------- タブ ----------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x===t));
+    document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on', p.id==='pane-'+t.dataset.pane));
+  });
+});
+
+// ---------- 1問追加 ----------
+$('btnAddOne').addEventListener('click', async ()=>{
+  const en = $('inEn').value.trim();
+  const ja = $('inJa').value.trim();
+  const m = $('msgOne');
+  if(!en || !ja){ m.className='msg err'; m.textContent='英単語と意味を入れてください'; return; }
+  const row = { subject_id:$('selSubject').value, unit:$('inUnit').value.trim(), grade:$('selGrade').value, format:'vocab', prompt:en, answer:ja };
+  const { error } = await sb.from('questions').insert(row);
+  if(error){ m.className='msg err'; m.textContent='追加できませんでした：'+error.message; return; }
+  m.className='msg ok'; m.textContent=`「${en} → ${ja}」を追加しました`;
+  $('inEn').value=''; $('inJa').value=''; $('inEn').focus();
+  loadCounts();
+});
+
+// ---------- 汎用4択を追加 ----------
+$('btnAddChoice').addEventListener('click', async ()=>{
+  const m = $('msgChoice');
+  const prompt = $('cPrompt').value.trim();
+  const opts = [$('cA').value.trim(),$('cB').value.trim(),$('cC').value.trim(),$('cD').value.trim()];
+  const ci = +document.querySelector('input[name=cCorrect]:checked').value;
+  const exp = $('cExp').value.trim();
+  if(!prompt || opts.some(o=>!o)){ m.className='msg err'; m.textContent='問題文と4つの選択肢をすべて入力してください'; return; }
+  const row = { subject_id:$('selSubject').value, unit:$('inUnit').value.trim(), grade:$('selGrade').value,
+                format:'choice', prompt, answer:opts[ci], choices:opts, explanation:exp||null };
+  const { error } = await sb.from('questions').insert(row);
+  if(error){ m.className='msg err'; m.textContent='追加できませんでした：'+error.message; return; }
+  m.className='msg ok'; m.textContent='問題を追加しました（正解：'+opts[ci]+'）';
+  $('cPrompt').value=''; $('cA').value=''; $('cB').value=''; $('cC').value=''; $('cD').value=''; $('cExp').value='';
+  document.querySelector('input[name=cCorrect][value="0"]').checked = true;
+  $('cPrompt').focus();
+  loadCounts();
+});
+
+// ---------- CSV一括 ----------
+$('inFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ $('inCsv').value = r.result; };
+  r.readAsText(f, 'utf-8');
+});
+
+$('btnAddCsv').addEventListener('click', async ()=>{
+  const m = $('msgCsv');
+  const text = $('inCsv').value.trim();
+  if(!text){ m.className='msg err'; m.textContent='CSVを貼り付けてください'; return; }
+  const subject_id = $('selSubject').value, unit=$('inUnit').value.trim(), grade=$('selGrade').value;
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const rows=[]; let skipped=0;
+  lines.forEach((line,i)=>{
+    const parts = line.split(',');
+    const en=(parts[0]||'').trim(), ja=(parts.slice(1).join(',')||'').trim();
+    // 見出し行（英語/意味 など）はスキップ
+    if(i===0 && (/単語|word|english/i.test(en) || /意味|meaning/.test(ja))){ skipped++; return; }
+    if(!en || !ja){ skipped++; return; }
+    rows.push({ subject_id, unit, grade, format:'vocab', prompt:en, answer:ja });
+  });
+  if(rows.length===0){ m.className='msg err'; m.textContent='有効な行がありませんでした'; return; }
+  $('btnAddCsv').disabled=true;
+  const { error } = await sb.from('questions').insert(rows);
+  $('btnAddCsv').disabled=false;
+  if(error){ m.className='msg err'; m.textContent='追加できませんでした：'+error.message; return; }
+  m.className='msg ok'; m.textContent=`${rows.length}件を追加しました${skipped?`（${skipped}行スキップ）`:''}`;
+  $('inCsv').value=''; $('inFile').value='';
+  loadCounts();
+});
+
+// ---------- 問題数 ----------
+$('btnReloadCounts').addEventListener('click', loadCounts);
+async function loadCounts(){
+  const box = $('counts'); box.innerHTML='';
+  for(const s of subjects){
+    const { count } = await sb.from('questions').select('*', { count:'exact', head:true }).eq('subject_id', s.id);
+    const span = document.createElement('span');
+    span.className='chip';
+    span.innerHTML = `${s.name} <b>${count||0}</b> 問`;
+    box.appendChild(span);
+  }
+}
+
+// ---------- 生徒一覧 ----------
+$('btnReloadStudents').addEventListener('click', loadStudents);
+async function loadStudents(){
+  const { data, error } = await sb.from('students')
+    .select('student_code,display_name,grade,total_points,current_streak,total_days,last_done_date')
+    .order('total_points', { ascending:false });
+  const tb = $('studentRows');
+  if(error){ tb.innerHTML=`<tr><td colspan="7" class="msg err">${error.message}</td></tr>`; return; }
+  if(!data || data.length===0){ tb.innerHTML=`<tr><td colspan="7" class="hint">まだ生徒がいません</td></tr>`; return; }
+  tb.innerHTML = data.map(s=>`<tr>
+    <td>${s.student_code}</td>
+    <td>${s.display_name||'-'}</td>
+    <td>${s.grade||'-'}</td>
+    <td class="pt">${(s.total_points||0).toLocaleString()}</td>
+    <td>${s.current_streak||0}日</td>
+    <td>${s.total_days||0}日</td>
+    <td>${s.last_done_date||'-'}</td>
+  </tr>`).join('');
+}
+</script>
+</body>
+</html>

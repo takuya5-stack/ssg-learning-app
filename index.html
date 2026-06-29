@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SSG学習アプリ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --navy:#2B4A63; --navy-deep:#21384C; --navy-panel:#21384C;
+    --navy-card:#34536D; --navy-line:#45637B;
+    --orange:#F4A024; --orange-text:#6E4905;
+    --ink:#21384C; --muted:#B9C7D4; --muted2:#8FA3B5;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    background:var(--navy-deep); color:#fff; min-height:100vh; display:flex; justify-content:center;}
+  #app{width:100%; max-width:430px; background:var(--navy); min-height:100vh; display:flex; flex-direction:column;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; background:var(--navy-deep);}
+  .topbar .logo{font-size:16px; font-weight:600; color:#fff; display:flex; align-items:center; gap:6px;}
+  .topbar .logo .arw{color:var(--orange); font-weight:700;}
+  .topbar .streak{font-size:13px; font-weight:600; color:var(--orange);}
+  .screen{flex:1; padding:22px 20px; display:none; animation:fade .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  @keyframes pop{0%{transform:scale(.7); opacity:0;} 60%{transform:scale(1.1);} 100%{transform:scale(1); opacity:1;}}
+  label{font-size:13px; color:var(--muted); display:block; margin-bottom:4px;}
+  input{width:100%; height:46px; border-radius:12px; border:none; padding:0 14px; font-size:16px;
+    background:#fff; color:var(--ink); margin-bottom:16px;}
+  .btn{width:100%; background:var(--orange); color:var(--ink); border:none; border-radius:14px;
+    padding:15px; font-size:17px; font-weight:700; cursor:pointer;}
+  .btn:active{transform:scale(.98);}
+  .btn[disabled]{opacity:.5;}
+  .err{color:#FFB4A8; font-size:13px; margin:-6px 0 12px; min-height:18px;}
+  .center{text-align:center;}
+  .muted{color:var(--muted);} .muted2{color:var(--muted2);}
+
+  /* login */
+  .brand{text-align:center; margin:34px 0 36px;}
+  .brand .badge{width:84px; height:84px; border-radius:24px; background:var(--orange);
+    display:inline-flex; align-items:center; justify-content:center; margin-bottom:14px;}
+  .brand .badge i{font-size:46px; color:var(--navy-deep);}
+  .brand h1{font-size:22px; font-weight:600; margin:0;}
+
+  /* quiz */
+  .quizback{background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:0 0 14px; display:flex; align-items:center; gap:4px;}
+  .quizback:active{opacity:.6;}
+  .qhead{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; font-size:13px;}
+  .qhead .count{color:var(--orange); font-weight:600;}
+  .bar{height:9px; background:var(--navy-deep); border-radius:999px; overflow:hidden; margin-bottom:22px;}
+  .bar > div{height:100%; background:var(--orange); border-radius:999px; transition:width .3s;}
+  .wordcard{background:#fff; border-radius:16px; padding:28px 14px; text-align:center; margin-bottom:20px;}
+  .wordcard .ask{font-size:12px; color:#5F7385;}
+  .wordcard .word{font-size:40px; font-weight:700; color:var(--navy-deep); margin-top:8px; letter-spacing:.5px; word-break:break-word;}
+  .opts{display:flex; flex-direction:column; gap:11px;}
+  .opt{text-align:left; padding:15px 16px; font-size:16px; border-radius:14px;
+    background:var(--navy-card); color:#fff; border:1px solid var(--navy-line); cursor:pointer;}
+  .opt:active{transform:scale(.99);}
+  .opt.correct{background:var(--orange); color:var(--navy-deep); border-color:var(--orange); font-weight:700;}
+  .opt.wrong{background:#C0392B; color:#fff; border-color:#C0392B;}
+  .opt[disabled]{cursor:default;}
+  .qnote{text-align:center; font-size:12px; color:var(--muted2); margin-top:18px;}
+
+  /* result */
+  .burst{margin:6px 0 4px; font-size:26px; color:var(--orange);}
+  .burst i{margin:0 5px;} .burst .small{font-size:18px;}
+  .ptcard{background:var(--orange); border-radius:16px; padding:18px; margin:14px 0 12px; animation:pop .4s ease;}
+  .ptcard .lab{font-size:13px; color:var(--orange-text); margin:0;}
+  .ptcard .big{font-size:42px; font-weight:700; color:var(--navy-deep); margin:2px 0 0;}
+  .row2{display:flex; gap:10px; margin-bottom:16px;}
+  .minicard{flex:1; background:var(--navy-deep); border-radius:14px; padding:12px;}
+  .minicard .lab{font-size:12px; color:var(--muted); margin:0;}
+  .minicard .v{font-size:20px; font-weight:600; color:#fff; margin:2px 0 0;}
+  .minicard .v i, .minicard .lab i{color:var(--orange);}
+  .lvwrap{text-align:left; margin-bottom:18px;}
+  .lvwrap .head{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px;}
+
+  /* menu */
+  .todaybox{background:var(--navy-deep); border-radius:16px; padding:14px 16px; margin-bottom:18px;
+    display:flex; align-items:center; justify-content:space-between;}
+  .todaybox .lab{font-size:12px; color:var(--muted); margin:0;}
+  .todaybox .v{font-size:22px; font-weight:700; color:var(--orange); margin:2px 0 0;}
+  .todaybox > i{font-size:32px; color:var(--orange);}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+  .tile{border-radius:16px; padding:18px 10px; text-align:center; border:0.5px solid var(--navy-line);}
+  .tile i{font-size:28px;} .tile .nm{font-size:15px; margin:8px 0 2px;}
+  .tile .st{font-size:11px;}
+  .tile.on{border:2px solid var(--orange); background:var(--navy-deep); cursor:pointer;}
+  .tile.on i{color:var(--orange);} .tile.on .nm{color:#fff; font-weight:600;} .tile.on .st{color:var(--orange);}
+  .tile.off i{color:#6E8298;} .tile.off .nm{color:var(--muted2);} .tile.off .st{color:#6E8298;}
+
+  /* mypage */
+  .prof{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .prof .av{width:48px; height:48px; border-radius:50%; background:var(--orange);
+    display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--navy-deep);}
+  .prof .nm{font-size:16px; font-weight:600; margin:0;} .prof .sub{font-size:12px; color:var(--muted); margin:0;}
+  .totalcard{background:var(--orange); border-radius:16px; padding:16px; margin-bottom:14px;}
+  .totalcard .lab{font-size:12px; color:var(--orange-text); margin:0;}
+  .totalcard .big{font-size:30px; font-weight:700; color:var(--navy-deep); margin:2px 0 0;}
+  .bestrow{border:0.5px solid var(--navy-line); border-radius:14px; padding:14px; display:flex; justify-content:space-between; align-items:center; font-size:14px;}
+  .bestrow i{color:var(--orange);}
+  .navbtns{display:flex; gap:10px; margin-top:18px;}
+  .ghost{flex:1; background:transparent; color:#fff; border:1px solid var(--navy-line); border-radius:14px; padding:12px; font-size:14px; cursor:pointer;}
+  .link{background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; text-decoration:underline; padding:8px;}
+  .loading{flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted);}
+  /* 分野選択 */
+  .topicbtn{display:flex; align-items:center; justify-content:space-between; padding:18px 18px; border-radius:14px;
+    background:var(--navy-deep); color:#fff; border:1px solid var(--navy-line); font-size:17px; font-weight:500; cursor:pointer;}
+  .topicbtn:active{transform:scale(.99);} .topicbtn i{color:var(--orange);}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <span class="logo"><span class="arw">↗</span> SSG学習</span>
+    <span class="streak" id="topStreak"></span>
+  </div>
+
+  <!-- ログイン -->
+  <div class="screen active" id="s-login">
+    <div class="brand">
+      <div class="badge"><i class="ti ti-arrow-up-right"></i></div>
+      <h1>SSG学習アプリ</h1>
+    </div>
+    <label>生徒ID</label>
+    <input type="text" id="inId" autocapitalize="off" autocomplete="username" placeholder="student07">
+    <label>PIN（4桁）</label>
+    <input type="password" id="inPin" inputmode="numeric" autocomplete="current-password" placeholder="••••">
+    <div class="err" id="loginErr"></div>
+    <button class="btn" id="btnLogin">スタート！</button>
+  </div>
+
+  <!-- ローディング -->
+  <div class="screen" id="s-loading"><div class="loading">読み込み中…</div></div>
+
+  <!-- 出題 -->
+  <div class="screen" id="s-quiz">
+    <button class="quizback" id="btnQuizBack"><i class="ti ti-arrow-left"></i> もどる</button>
+    <div class="qhead">
+      <span class="muted" id="qSubject">今日の英単語</span>
+      <span class="count" id="qCount">Q1 / 10</span>
+    </div>
+    <div class="bar"><div id="qBar" style="width:0%"></div></div>
+    <div class="wordcard">
+      <span class="ask" id="qAsk">この意味は？</span>
+      <div class="word" id="qWord">—</div>
+    </div>
+    <div class="opts" id="qOpts"></div>
+    <p class="qnote">正解 +2pt ・ 苦手はまた明日出ます</p>
+  </div>
+
+  <!-- 結果 -->
+  <div class="screen" id="s-result">
+    <div class="center">
+      <div class="burst"><i class="ti ti-confetti small"></i><i class="ti ti-star"></i><i class="ti ti-confetti small"></i></div>
+      <p style="font-size:22px; font-weight:600; margin:6px 0 2px;" id="rTitle">よくできました！</p>
+      <p class="muted" id="rScore" style="margin:0 0 18px;">9 / 10 正解</p>
+    </div>
+    <div class="ptcard center">
+      <p class="lab" id="rPtLab">今日の獲得ポイント</p>
+      <p class="big" id="rPt">+0 pt</p>
+    </div>
+    <div class="row2">
+      <div class="minicard">
+        <p class="lab"><i class="ti ti-flame"></i> 連続</p>
+        <p class="v" id="rStreak">1日</p>
+      </div>
+      <div class="minicard">
+        <p class="lab"><i class="ti ti-arrow-up"></i> レベル</p>
+        <p class="v" id="rLevel">1</p>
+      </div>
+    </div>
+    <div class="lvwrap">
+      <div class="head"><span>次のレベルまで</span><span id="rLvText">0 / 200</span></div>
+      <div class="bar"><div id="rLvBar" style="width:0%"></div></div>
+    </div>
+    <button class="btn" id="btnToMenu">つぎへ</button>
+  </div>
+
+  <!-- 教科メニュー -->
+  <div class="screen" id="s-menu">
+    <div class="todaybox">
+      <div>
+        <p class="lab">今日の獲得</p>
+        <p class="v" id="mToday">+0 pt</p>
+      </div>
+      <i class="ti ti-circle-check"></i>
+    </div>
+    <p class="muted" style="margin:0 0 12px;">教科をえらぶ</p>
+    <div class="grid" id="mGrid"></div>
+    <div class="navbtns">
+      <button class="ghost" id="btnMyPage"><i class="ti ti-user"></i> マイページ</button>
+    </div>
+  </div>
+
+  <!-- 分野選択（社会など） -->
+  <div class="screen" id="s-topics">
+    <button class="quizback" id="btnTopicsBack"><i class="ti ti-arrow-left"></i> もどる</button>
+    <p class="muted" id="tpTitle" style="margin:0 0 14px;">分野をえらぶ</p>
+    <div id="tpGrid" style="display:flex; flex-direction:column; gap:11px;"></div>
+  </div>
+
+  <!-- マイページ -->
+  <div class="screen" id="s-mypage">
+    <div class="prof">
+      <div class="av" id="pAv">--</div>
+      <div>
+        <p class="nm" id="pName">—</p>
+        <p class="sub" id="pSub">—</p>
+      </div>
+    </div>
+    <div class="totalcard">
+      <p class="lab">合計ポイント</p>
+      <p class="big" id="pTotal">0 pt</p>
+    </div>
+    <div class="row2">
+      <div class="minicard">
+        <p class="lab"><i class="ti ti-flame"></i> 連続</p>
+        <p class="v" id="pStreak">0 日</p>
+      </div>
+      <div class="minicard">
+        <p class="lab"><i class="ti ti-calendar-check"></i> 通算</p>
+        <p class="v" id="pTotalDays">0 日</p>
+      </div>
+    </div>
+    <div class="bestrow">
+      <span><i class="ti ti-target"></i> 最長連続記録</span>
+      <span id="pBest" style="font-weight:600; color:var(--orange);">0 日</span>
+    </div>
+    <div class="navbtns">
+      <button class="ghost" id="btnBack"><i class="ti ti-arrow-left"></i> もどる</button>
+    </div>
+    <div class="center"><button class="link" id="btnLogout">ログアウト</button></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 設定: Supabaseの値を入れてください（プロジェクト設定 → API）
+// ============================================================
+const SUPABASE_URL = "https://ewreqtxpswincicadotj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_K_YR6ghUr13Pn3yqqtvLcQ_xpe8iwCv";
+const EMAIL_DOMAIN = "ssg.local";   // ダミーメールのドメイン（schemaの方針と合わせる）
+
+// 教科ごとの見た目（ラベル等）。vocab=英単語型(意味), それ以外は汎用4択
+const SUBJECT_META = {
+  english: { label:'今日の英単語', ask:'この意味は？' },
+  social:  { label:'今日の社会',   ask:'答えをえらぼう' }
+};
+
+const CONFIGURED = /^https?:\/\//.test(SUPABASE_URL);
+const sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const $ = id => document.getElementById(id);
+function show(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('s-'+name).classList.add('active');
+}
+
+let profile = null;   // students の行
+let questions = [];    // 今日の10問
+let idx = 0;           // 現在の問題番号
+let answers = [];      // 解答記録 [{question_id, answer}]
+let currentSubject = 'english';  // いま挑戦中の教科slug
+let currentUnit = '';            // いま挑戦中の分野（単語/歴史 など。無ければ空）
+let currentGrade = '';           // いま挑戦中の学年（英語の中1/中2/中3。無ければ空）
+
+// ---------- 起動 ----------
+(async function init(){
+  if(!CONFIGURED){
+    show('login');
+    $('loginErr').textContent = '※ Supabaseの設定（URL/キー）が未入力です';
+    $('btnLogin').disabled = true;
+    return;
+  }
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session){
+    await loadProfile();
+    show('menu');
+    renderMenu();
+  }else{
+    show('login');
+  }
+})();
+
+// ---------- ログイン ----------
+$('btnLogin').addEventListener('click', login);
+$('inPin').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
+
+async function login(){
+  const id = $('inId').value.trim().toLowerCase();
+  const pin = $('inPin').value.trim();
+  $('loginErr').textContent = '';
+  if(!id || !pin){ $('loginErr').textContent='IDとPINを入れてね'; return; }
+  $('btnLogin').disabled = true; $('btnLogin').textContent='…';
+  const email = id + '@' + EMAIL_DOMAIN;
+  const { error } = await sb.auth.signInWithPassword({ email, password: pin });
+  $('btnLogin').disabled = false; $('btnLogin').textContent='スタート！';
+  if(error){ $('loginErr').textContent='IDかPINがちがうみたい'; return; }
+  await loadProfile();
+  show('menu'); renderMenu();   // ログイン後はメニューへ（教科→分野→学年を選ぶ）
+}
+
+async function loadProfile(){
+  const { data:{ user } } = await sb.auth.getUser();
+  const { data } = await sb.from('students').select('*').eq('id', user.id).single();
+  profile = data;
+  if(profile){
+    $('topStreak').innerHTML = '<i class="ti ti-flame"></i> '+profile.current_streak+'日';
+  }
+}
+
+// ---------- 出題 ----------
+async function startQuiz(slug, unit, grade){
+  currentSubject = slug || 'english';
+  currentUnit = unit || '';
+  currentGrade = grade || '';
+  show('loading');
+  const { data, error } = await sb.rpc('get_daily_questions',
+    { p_subject_slug: currentSubject, p_unit: currentUnit, p_grade: currentGrade, p_limit: 10 });
+  if(error || !data || data.length===0){
+    alert('まだ問題がありません。先生に伝えてください。');
+    show('menu'); renderMenu(); return;
+  }
+  // 見出し（教科｜分野 学年）
+  const s = SUBJECTS.find(x=>x.slug===currentSubject);
+  const nm = s ? s.nm : '問題';
+  $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
+  $('qAsk').textContent = (currentUnit==='単語'||currentUnit==='熟語') ? 'この意味は？' : '答えをえらぼう';
+  questions = data; idx = 0; answers = [];
+  show('quiz');
+  renderQuestion();
+}
+
+// 途中でやめる（ポイントは加算しない＝submitを呼ばない）
+$('btnQuizBack').addEventListener('click', ()=>{
+  if(confirm('途中でやめると、今日のポイントは入りません。もどりますか？')){
+    questions = []; idx = 0; answers = [];
+    show('menu'); renderMenu();
+  }
+});
+
+function renderQuestion(){
+  const q = questions[idx];
+  $('qCount').textContent = 'Q'+(idx+1)+' / '+questions.length;
+  $('qBar').style.width = (idx/questions.length*100)+'%';
+  const w = $('qWord');
+  w.textContent = q.prompt;
+  w.style.fontSize = q.prompt.length > 10 ? '22px' : '40px';   // 長い問題文（社会など）は小さめに
+  const wrap = $('qOpts'); wrap.innerHTML='';
+  (q.choices||[]).forEach(choice=>{
+    const b = document.createElement('button');
+    b.className='opt'; b.textContent=choice;
+    b.addEventListener('click', ()=>pick(b, choice));
+    wrap.appendChild(b);
+  });
+}
+
+function pick(btn, choice){
+  const q = questions[idx];
+  answers.push({ question_id: q.question_id, answer: choice });
+  document.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  btn.classList.add('correct');   // 出題RPCは正解を返さないので、ここでは選択を強調するだけ
+  setTimeout(()=>{
+    idx++;
+    if(idx < questions.length){ renderQuestion(); }
+    else finishQuiz();
+  }, 450);
+}
+
+async function finishQuiz(){
+  $('qBar').style.width='100%';
+  show('loading');
+  const { data, error } = await sb.rpc('submit_daily_quiz', { p_subject_slug: currentSubject, p_unit: currentUnit, p_grade: currentGrade, p_answers: answers });
+  if(error){ alert('採点に失敗しました。'+error.message); show('menu'); renderMenu(); return; }
+  await loadProfile();
+  renderResult(data);
+  show('result');
+}
+
+// ---------- 結果 ----------
+function renderResult(r){
+  $('rScore').textContent = r.correct+' / '+r.total+' 正解';
+  if(r.already_done){
+    $('rTitle').textContent='今日はもうクリア済み！';
+    $('rPtLab').textContent='練習モード（ポイントは1日1回）';
+    $('rPt').textContent='+0 pt';
+  }else{
+    $('rTitle').textContent = r.correct===r.total ? '全問正解！すごい！' : 'よくできました！';
+    $('rPtLab').textContent='今日の獲得ポイント';
+    $('rPt').textContent='+'+r.points_earned+' pt';
+  }
+  window._todayPt = r.points_earned || 0;
+  $('rStreak').textContent = r.current_streak+'日';
+  const lv = r.level_after;
+  if(r.level_after > r.level_before){ $('rLevel').textContent = r.level_before+' → '+r.level_after; }
+  else { $('rLevel').textContent = lv; }
+  // 次のレベルまで（200ptごと）
+  const total = profile ? profile.total_points : 0;
+  const into = total % 200;
+  $('rLvText').textContent = into+' / 200';
+  $('rLvBar').style.width = (into/200*100)+'%';
+}
+$('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
+
+// ---------- 教科メニュー ----------
+const GRADES = ['中1','中2','中3'];
+const SUBJECTS = [
+  {slug:'english', nm:'英語', icon:'ti-abc', on:true, topics:['単語','文法','熟語','不規則動詞'], grades:true},
+  {slug:'math', nm:'数学', icon:'ti-math', on:false},
+  {slug:'japanese', nm:'国語', icon:'ti-book', on:false},
+  {slug:'science', nm:'理科', icon:'ti-flask', on:false},
+  {slug:'social', nm:'社会', icon:'ti-globe', on:true, topics:['歴史','地理','公民']},
+  {slug:'eiken', nm:'英検', icon:'ti-certificate', on:false},
+];
+function renderMenu(){
+  const grid = $('mGrid'); grid.innerHTML='';
+  SUBJECTS.forEach(s=>{
+    const d = document.createElement('div');
+    d.className = 'tile ' + (s.on?'on':'off');
+    d.innerHTML = '<i class="ti '+s.icon+'"></i><p class="nm">'+s.nm+'</p>'+
+      '<span class="st">'+(s.on?'▶ スタート':'準備中')+'</span>';
+    if(s.on){
+      d.addEventListener('click', ()=>{
+        if(s.topics){ showTopics(s); }      // 分野があるなら分野選択へ
+        else { startQuiz(s.slug); }          // なければ即出題
+      });
+    }
+    grid.appendChild(d);
+  });
+  $('mToday').textContent = '+'+todayPoints()+' pt';
+}
+
+let topicsBack = ()=>{ show('menu'); renderMenu(); };  // 分野/学年画面の「もどる」先
+
+// 分野選択（英語の 単語/文法… 社会の 歴史/地理/公民 など）
+function showTopics(s){
+  $('tpTitle').textContent = s.nm + '｜分野をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  s.topics.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+t+'</span><i class="ti ti-chevron-right"></i>';
+    b.addEventListener('click', ()=>{
+      if(s.grades){ showGrades(s, t); }          // 学年の階層があるなら学年選択へ
+      else { startQuiz(s.slug, t); }              // なければ即出題
+    });
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ show('menu'); renderMenu(); };
+  show('topics');
+}
+
+// 学年選択（英語の 中1/中2/中3）
+function showGrades(s, unit){
+  $('tpTitle').textContent = s.nm + '｜' + unit + '｜学年をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  GRADES.forEach(g=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+g+'</span><i class="ti ti-chevron-right"></i>';
+    b.addEventListener('click', ()=> startQuiz(s.slug, unit, g));
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ showTopics(s); };   // 学年画面のもどる→分野選択へ
+  show('topics');
+}
+$('btnTopicsBack').addEventListener('click', ()=> topicsBack());
+function todayPoints(){
+  // 直近結果が無ければ 0。簡易表示（厳密値はマイページ参照）
+  return window._todayPt || 0;
+}
+
+// ---------- マイページ ----------
+$('btnMyPage').addEventListener('click', ()=>{ renderMyPage(); show('mypage'); });
+$('btnBack').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
+function renderMyPage(){
+  if(!profile) return;
+  const code = (profile.student_code||'').replace(/\D/g,'').slice(-2) || profile.student_code;
+  $('pAv').textContent = code;
+  $('pName').textContent = profile.display_name || profile.student_code;
+  $('pSub').textContent = profile.grade + ' ・ レベル ' + (Math.floor(profile.total_points/200)+1);
+  $('pTotal').textContent = profile.total_points.toLocaleString() + ' pt';
+  $('pStreak').textContent = profile.current_streak + ' 日';
+  $('pTotalDays').textContent = profile.total_days + ' 日';
+  $('pBest').textContent = profile.longest_streak + ' 日';
+}
+
+// ---------- ログアウト ----------
+$('btnLogout').addEventListener('click', async ()=>{
+  await sb.auth.signOut();
+  location.reload();
+});
+</script>
+</body>
+</html>
