@@ -57,8 +57,12 @@
     background:var(--navy-card); color:#fff; border:1px solid var(--navy-line); cursor:pointer;}
   .opt:active{transform:scale(.99);}
   .opt.correct{background:var(--orange); color:var(--navy-deep); border-color:var(--orange); font-weight:700;}
-  .opt.wrong{background:#C0392B; color:#fff; border-color:#C0392B;}
-  .opt[disabled]{cursor:default;}
+  .opt.right{background:#2fbf6e; color:#fff; border-color:#2fbf6e; font-weight:700;}
+  .opt.right::after{content:" ○"; font-weight:700;}
+  .opt.wrong{background:#C0392B; color:#fff; border-color:#C0392B; font-weight:700;}
+  .opt.wrong::after{content:" ×"; font-weight:700;}
+  .opt[disabled]{cursor:default; opacity:1;}
+  .opt[disabled]:not(.right):not(.wrong){opacity:.45;}
   .qnote{text-align:center; font-size:12px; color:var(--muted2); margin-top:18px;}
 
   /* result */
@@ -430,6 +434,7 @@ function renderQuestion(){
   (q.choices||[]).forEach(choice=>{
     const b = document.createElement('button');
     b.className='opt'; b.textContent=choice;
+    b.dataset.choice = choice;
     b.addEventListener('click', ()=>pick(b, choice));
     wrap.appendChild(b);
   });
@@ -438,13 +443,18 @@ function renderQuestion(){
 function pick(btn, choice){
   const q = questions[idx];
   answers.push({ question_id: q.question_id, answer: choice });
-  document.querySelectorAll('.opt').forEach(o=>o.disabled=true);
-  btn.classList.add('correct');   // 出題RPCは正解を返さないので、ここでは選択を強調するだけ
+  const isOk = (choice === q.answer);
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o=>{
+    o.disabled = true;
+    if(o.dataset.choice === q.answer) o.classList.add('right');   // 正解は必ず緑
+  });
+  if(!isOk) btn.classList.add('wrong');   // 間違って選んだものは赤
   setTimeout(()=>{
     idx++;
     if(idx < questions.length){ renderQuestion(); }
     else finishQuiz();
-  }, 450);
+  }, isOk ? 550 : 950);   // 間違いは正解を確認する時間を長めに
 }
 
 async function finishQuiz(){
