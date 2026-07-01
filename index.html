@@ -411,7 +411,11 @@ $('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
 const GRADES = ['中1','中2','中3'];
 const SUBJECTS = [
   {slug:'english', nm:'英語', icon:'ti-abc', on:true, gradeFirst:true, grades:true,
-   units:['Unit1','Unit2','Unit3','言語活動1','Unit4','言語活動2','Unit5','言語活動3','Unit6','言語活動4','Unit7','言語活動5','Unit8','言語活動7']},
+   units:{
+     '中1':['Unit1','Unit2','Unit3','言語活動1','Unit4','言語活動2','Unit5','言語活動3','Unit6','言語活動4','Unit7','言語活動5','Unit8','言語活動7'],
+     '中2':['Unit1','言語活動1','Unit2','言語活動2','Unit3','言語活動3','言語活動4','Unit4','言語活動5','Unit5','言語活動6','Unit6','言語活動7','言語活動8','Unit7','言語活動9','Unit8','言語活動10','言語活動11','LetsReadMore'],
+     '中3':[]
+   }},
   {slug:'math', nm:'数学', icon:'ti-math', on:false},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:false},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false},
@@ -492,10 +496,16 @@ async function showUnits(s, grade){
   $('tpTitle').textContent = s.nm + '｜' + grade + '｜Unitをえらぶ';
   const wrap = $('tpGrid');
   topicsBack = ()=>{ showGradeList(s); };   // Unit画面のもどる→学年選択へ
+  // その学年のUnit一覧（学年ごとに違う）。まだ用意していない学年は空
+  const unitList = Array.isArray(s.units) ? s.units : (s.units[grade] || []);
+  if(unitList.length===0){
+    $('tpGrid').innerHTML = '<p class="muted" style="padding:10px 2px;">この学年はまだ準備中です。</p>';
+    show('topics'); return;
+  }
   // まずボタンを先に描画（進捗は取れ次第うめる）
   const badge = {};
   wrap.innerHTML='';
-  s.units.forEach(u=>{
+  unitList.forEach(u=>{
     const b = document.createElement('button');
     b.className = 'topicbtn';
     b.innerHTML = '<span>'+u+'</span><span class="rt"><span class="prog">…</span>'
@@ -517,7 +527,7 @@ async function showUnits(s, grade){
     const unitOf = {}, totals = {}, corrects = {};
     (qs||[]).forEach(q=>{ unitOf[q.id]=q.unit; totals[q.unit]=(totals[q.unit]||0)+1; });
     (prg.data||[]).forEach(p=>{ if(p.last_result===true){ const u=unitOf[p.question_id]; if(u) corrects[u]=(corrects[u]||0)+1; } });
-    s.units.forEach(u=>{
+    unitList.forEach(u=>{
       const tot = totals[u]||0, cor = corrects[u]||0;
       const el = badge[u]; if(!el) return;
       el.textContent = cor+'/'+tot;
@@ -525,7 +535,7 @@ async function showUnits(s, grade){
     });
   } catch(e){
     // 進捗が取れなくてもメニューは使える
-    s.units.forEach(u=>{ if(badge[u]) badge[u].textContent=''; });
+    unitList.forEach(u=>{ if(badge[u]) badge[u].textContent=''; });
   }
 }
 $('btnTopicsBack').addEventListener('click', ()=> topicsBack());
