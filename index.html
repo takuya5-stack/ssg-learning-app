@@ -107,6 +107,9 @@
   .topicbtn{display:flex; align-items:center; justify-content:space-between; padding:18px 18px; border-radius:14px;
     background:var(--navy-deep); color:#fff; border:1px solid var(--navy-line); font-size:17px; font-weight:500; cursor:pointer;}
   .topicbtn:active{transform:scale(.99);} .topicbtn i{color:var(--orange);}
+  .topicbtn .rt{display:flex; align-items:center; gap:10px;}
+  .topicbtn .prog{font-size:14px; font-weight:700; color:var(--orange); background:rgba(244,160,36,.14); padding:3px 11px; border-radius:999px; white-space:nowrap;}
+  .topicbtn .prog.done{color:#2fbf6e; background:rgba(47,191,110,.16);}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
 </head>
@@ -327,7 +330,7 @@ async function startQuiz(slug, unit, grade){
   const s = SUBJECTS.find(x=>x.slug===currentSubject);
   const nm = s ? s.nm : '問題';
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
-  $('qAsk').textContent = (currentUnit==='単語'||currentUnit==='熟語') ? 'この意味は？' : '答えをえらぼう';
+  $('qAsk').textContent = (currentSubject==='english') ? 'この意味は？' : '答えをえらぼう';
   questions = data; idx = 0; answers = [];
   show('quiz');
   renderQuestion();
@@ -407,7 +410,8 @@ $('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
 // ---------- 教科メニュー ----------
 const GRADES = ['中1','中2','中3'];
 const SUBJECTS = [
-  {slug:'english', nm:'英語', icon:'ti-abc', on:true, topics:['単語','文法','熟語','不規則動詞'], grades:true},
+  {slug:'english', nm:'英語', icon:'ti-abc', on:true, gradeFirst:true, grades:true,
+   units:['Unit1','Unit2','Unit3','言語活動1','Unit4','言語活動2','Unit5','言語活動3','Unit6','言語活動4','Unit7','言語活動5','Unit8','言語活動7']},
   {slug:'math', nm:'数学', icon:'ti-math', on:false},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:false},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false},
@@ -423,7 +427,8 @@ function renderMenu(){
       '<span class="st">'+(s.on?'▶ スタート':'準備中')+'</span>';
     if(s.on){
       d.addEventListener('click', ()=>{
-        if(s.topics){ showTopics(s); }      // 分野があるなら分野選択へ
+        if(s.gradeFirst){ showGradeList(s); }// 学年→Unit の階層（英語）
+        else if(s.topics){ showTopics(s); }  // 分野があるなら分野選択へ
         else { startQuiz(s.slug); }          // なければ即出題
       });
     }
@@ -465,6 +470,63 @@ function showGrades(s, unit){
   });
   topicsBack = ()=>{ showTopics(s); };   // 学年画面のもどる→分野選択へ
   show('topics');
+}
+
+// 学年選択（英語：学年が先）→ 選ぶとUnit一覧へ
+function showGradeList(s){
+  $('tpTitle').textContent = s.nm + '｜学年をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  GRADES.forEach(g=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+g+'</span><i class="ti ti-chevron-right"></i>';
+    b.addEventListener('click', ()=> showUnits(s, g));
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ show('menu'); renderMenu(); };
+  show('topics');
+}
+
+// Unit選択（英語：学年のあと）。各Unitに「正解数/総数」を表示
+async function showUnits(s, grade){
+  $('tpTitle').textContent = s.nm + '｜' + grade + '｜Unitをえらぶ';
+  const wrap = $('tpGrid');
+  topicsBack = ()=>{ showGradeList(s); };   // Unit画面のもどる→学年選択へ
+  // まずボタンを先に描画（進捗は取れ次第うめる）
+  const badge = {};
+  wrap.innerHTML='';
+  s.units.forEach(u=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+u+'</span><span class="rt"><span class="prog">…</span>'
+      + '<i class="ti ti-chevron-right"></i></span>';
+    b.addEventListener('click', ()=> startQuiz(s.slug, u, grade));
+    badge[u] = b.querySelector('.prog');
+    wrap.appendChild(b);
+  });
+  show('topics');
+
+  // 進捗（そのUnitの総単語数と、最後に正解した単語数）を取得
+  try {
+    const [{ data: qs }, prg] = await Promise.all([
+      sb.from('questions').select('id,unit,subjects!inner(slug)')
+        .eq('subjects.slug', s.slug).eq('grade', grade).eq('is_active', true),
+      profile ? sb.from('student_question_progress').select('question_id,last_result')
+        .eq('student_id', profile.id) : Promise.resolve({ data: [] }),
+    ]);
+    const unitOf = {}, totals = {}, corrects = {};
+    (qs||[]).forEach(q=>{ unitOf[q.id]=q.unit; totals[q.unit]=(totals[q.unit]||0)+1; });
+    (prg.data||[]).forEach(p=>{ if(p.last_result===true){ const u=unitOf[p.question_id]; if(u) corrects[u]=(corrects[u]||0)+1; } });
+    s.units.forEach(u=>{
+      const tot = totals[u]||0, cor = corrects[u]||0;
+      const el = badge[u]; if(!el) return;
+      el.textContent = cor+'/'+tot;
+      el.classList.toggle('done', tot>0 && cor===tot);
+    });
+  } catch(e){
+    // 進捗が取れなくてもメニューは使える
+    s.units.forEach(u=>{ if(badge[u]) badge[u].textContent=''; });
+  }
 }
 $('btnTopicsBack').addEventListener('click', ()=> topicsBack());
 function todayPoints(){
