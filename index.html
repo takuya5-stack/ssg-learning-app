@@ -110,6 +110,36 @@
   .topicbtn .rt{display:flex; align-items:center; gap:10px;}
   .topicbtn .prog{font-size:14px; font-weight:700; color:var(--orange); background:rgba(244,160,36,.14); padding:3px 11px; border-radius:999px; white-space:nowrap;}
   .topicbtn .prog.done{color:#2fbf6e; background:rgba(47,191,110,.16);}
+  /* 2通貨・獲得内訳 */
+  .ptcard .coin{font-size:14px; color:var(--orange-text); margin:6px 0 0; font-weight:600;}
+  .ptcard .coin i{margin-right:3px;}
+  .brk{display:flex; flex-direction:column; gap:6px; margin:0 0 16px;}
+  .brk .r{display:flex; justify-content:space-between; font-size:13px; background:var(--navy-deep); border-radius:10px; padding:9px 13px;}
+  .brk .r span:first-child{color:var(--muted);}
+  .brk .r span:last-child{color:var(--orange); font-weight:700;}
+  .brk .r.big span:last-child{color:#2fbf6e;}
+  /* コイン残高カード */
+  .coincard{background:var(--navy-deep); border:1px solid var(--navy-line); border-radius:16px; padding:16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;}
+  .coincard .lab{font-size:12px; color:var(--muted); margin:0;}
+  .coincard .v{font-size:26px; font-weight:700; color:var(--orange); margin:2px 0 0;}
+  .coincard .v i{font-size:22px; margin-right:4px;}
+  .coincard .ci{font-size:34px; color:var(--orange);}
+  /* 景品交換（準備中） */
+  .prizebox{border:1px dashed var(--navy-line); border-radius:16px; padding:18px; text-align:center; margin-bottom:14px; opacity:.7;}
+  .prizebox i{font-size:30px; color:var(--muted2);}
+  .prizebox .t{font-size:15px; font-weight:600; margin:8px 0 2px; color:var(--muted);}
+  .prizebox .s{font-size:12px; color:var(--muted2); margin:0;}
+  .guidebtn{width:100%; background:var(--navy-card); color:#fff; border:1px solid var(--navy-line);
+    border-radius:14px; padding:14px; font-size:15px; font-weight:600; cursor:pointer; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:center; gap:8px;}
+  .guidebtn i{color:var(--orange);}
+  /* ガイド */
+  .gsec{font-size:15px; font-weight:700; margin:20px 0 10px; display:flex; align-items:center; gap:7px;}
+  .gsec i{color:var(--orange);}
+  .grow{display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--navy-deep); border:1px solid var(--navy-line); border-radius:12px; padding:13px 15px; margin-bottom:9px;}
+  .grow .gt{font-size:14px;} .grow .gt .sub{display:block; font-size:11px; color:var(--muted2); margin-top:2px;}
+  .grow .gp{font-size:15px; font-weight:700; color:var(--orange); white-space:nowrap;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
 </head>
@@ -150,7 +180,7 @@
       <div class="word" id="qWord">—</div>
     </div>
     <div class="opts" id="qOpts"></div>
-    <p class="qnote">正解 +2pt ・ 苦手はまた明日出ます</p>
+    <p class="qnote">全問正解でボーナス ・ 苦手はまた明日出ます</p>
   </div>
 
   <!-- 結果 -->
@@ -161,9 +191,11 @@
       <p class="muted" id="rScore" style="margin:0 0 18px;">9 / 10 正解</p>
     </div>
     <div class="ptcard center">
-      <p class="lab" id="rPtLab">今日の獲得ポイント</p>
-      <p class="big" id="rPt">+0 pt</p>
+      <p class="lab" id="rPtLab">今日の獲得</p>
+      <p class="big" id="rPt">+0 XP</p>
+      <p class="coin" id="rCoin"><i class="ti ti-coin"></i>+0 コイン</p>
     </div>
+    <div class="brk" id="rBreak"></div>
     <div class="row2">
       <div class="minicard">
         <p class="lab"><i class="ti ti-flame"></i> 連続</p>
@@ -175,7 +207,7 @@
       </div>
     </div>
     <div class="lvwrap">
-      <div class="head"><span>次のレベルまで</span><span id="rLvText">0 / 200</span></div>
+      <div class="head"><span>次のレベルまで</span><span id="rLvText">0 / 50</span></div>
       <div class="bar"><div id="rLvBar" style="width:0%"></div></div>
     </div>
     <button class="btn" id="btnToMenu">つぎへ</button>
@@ -214,9 +246,22 @@
       </div>
     </div>
     <div class="totalcard">
-      <p class="lab">合計ポイント</p>
-      <p class="big" id="pTotal">0 pt</p>
+      <p class="lab">経験値（XP）　レベルを決める</p>
+      <p class="big" id="pTotal">0 XP</p>
     </div>
+    <div class="coincard">
+      <div>
+        <p class="lab">コイン残高　景品と交換</p>
+        <p class="v"><i class="ti ti-coin"></i><span id="pCoin">0</span></p>
+      </div>
+      <i class="ti ti-coins ci"></i>
+    </div>
+    <div class="prizebox">
+      <i class="ti ti-gift"></i>
+      <p class="t">景品交換（準備中）</p>
+      <p class="s">コインをためて、景品と交換できるようになるよ。もうすぐ！</p>
+    </div>
+    <button class="guidebtn" id="btnGuide"><i class="ti ti-help-circle"></i> どうすればポイントが入る？</button>
     <div class="row2">
       <div class="minicard">
         <p class="lab"><i class="ti ti-flame"></i> 連続</p>
@@ -235,6 +280,29 @@
       <button class="ghost" id="btnBack"><i class="ti ti-arrow-left"></i> もどる</button>
     </div>
     <div class="center"><button class="link" id="btnLogout">ログアウト</button></div>
+  </div>
+
+  <!-- ポイントの貯め方ガイド -->
+  <div class="screen" id="s-guide">
+    <button class="quizback" id="btnGuideBack"><i class="ti ti-arrow-left"></i> もどる</button>
+    <p style="font-size:20px; font-weight:700; margin:0 0 4px;">ポイントの貯め方</p>
+    <p class="muted" style="margin:0 0 6px; font-size:13px;">XPとコインは同じ数だけ同時にもらえるよ。XPはレベル、コインは景品用。</p>
+
+    <div class="gsec"><i class="ti ti-coin"></i> 毎日もらえる</div>
+    <div class="grow"><span class="gt">ログイン<span class="sub">1日1回</span></span><span class="gp">+1</span></div>
+    <div class="grow"><span class="gt">参加賞（クイズ1セット）<span class="sub">1日1回</span></span><span class="gp">+1</span></div>
+
+    <div class="gsec"><i class="ti ti-star"></i> がんばりボーナス</div>
+    <div class="grow"><span class="gt">10問ぜんぶ正解<span class="sub">同じUnitで1日1回</span></span><span class="gp">+5</span></div>
+    <div class="grow"><span class="gt">Unit制覇（全単語を正解）<span class="sub">一生に1回だけ</span></span><span class="gp">+5</span></div>
+
+    <div class="gsec"><i class="ti ti-flame"></i> 連続ボーナス</div>
+    <div class="grow"><span class="gt">3日つづけた</span><span class="gp">+5</span></div>
+    <div class="grow"><span class="gt">7日つづけた</span><span class="gp">+15</span></div>
+    <div class="grow"><span class="gt">14日つづけた</span><span class="gp">+30</span></div>
+    <div class="grow"><span class="gt">30日つづけた<span class="sub">以降30日ごとにもう1回</span></span><span class="gp">+50</span></div>
+    <p class="muted" style="font-size:12px; margin:10px 2px 0;">※1日サボると連続は0にもどるよ。クイズを1セットやった日がカウントされる（ログインだけはNG）。</p>
+    <div class="navbtns"><button class="ghost" id="btnGuideBack2"><i class="ti ti-arrow-left"></i> もどる</button></div>
   </div>
 </div>
 
@@ -279,6 +347,7 @@ let currentGrade = '';           // いま挑戦中の学年（英語の中1/中
   }
   const { data:{ session } } = await sb.auth.getSession();
   if(session){
+    await claimLoginBonus();
     await loadProfile();
     show('menu');
     renderMenu();
@@ -286,6 +355,11 @@ let currentGrade = '';           // いま挑戦中の学年（英語の中1/中
     show('login');
   }
 })();
+
+// ログインボーナス（1日1回 +1）。サーバー側で当日判定するので毎回呼んでOK
+async function claimLoginBonus(){
+  try{ await sb.rpc('claim_login_bonus'); }catch(e){ /* 取れなくても続行 */ }
+}
 
 // ---------- ログイン ----------
 $('btnLogin').addEventListener('click', login);
@@ -301,6 +375,7 @@ async function login(){
   const { error } = await sb.auth.signInWithPassword({ email, password: pin });
   $('btnLogin').disabled = false; $('btnLogin').textContent='スタート！';
   if(error){ $('loginErr').textContent='IDかPINがちがうみたい'; return; }
+  await claimLoginBonus();
   await loadProfile();
   show('menu'); renderMenu();   // ログイン後はメニューへ（教科→分野→学年を選ぶ）
 }
@@ -384,26 +459,40 @@ async function finishQuiz(){
 
 // ---------- 結果 ----------
 function renderResult(r){
+  const earned = r.earned || 0;
   $('rScore').textContent = r.correct+' / '+r.total+' 正解';
-  if(r.already_done){
-    $('rTitle').textContent='今日はもうクリア済み！';
-    $('rPtLab').textContent='練習モード（ポイントは1日1回）';
-    $('rPt').textContent='+0 pt';
-  }else{
-    $('rTitle').textContent = r.correct===r.total ? '全問正解！すごい！' : 'よくできました！';
-    $('rPtLab').textContent='今日の獲得ポイント';
-    $('rPt').textContent='+'+r.points_earned+' pt';
+  // タイトル
+  if(r.mastered){ $('rTitle').textContent='Unit制覇！おめでとう！'; }
+  else if(r.perfect){ $('rTitle').textContent='全問正解！すごい！'; }
+  else if(earned>0){ $('rTitle').textContent='よくできました！'; }
+  else { $('rTitle').textContent='おつかれさま！'; }
+  // 獲得（XP・コイン同額）
+  $('rPtLab').textContent = earned>0 ? '今日の獲得' : '今日はもう獲得ずみ';
+  $('rPt').textContent = '+'+earned+' XP';
+  $('rCoin').innerHTML = '<i class="ti ti-coin"></i>+'+earned+' コイン';
+  // 内訳
+  const brk = $('rBreak'); brk.innerHTML='';
+  const addRow = (label, pt, big)=>{
+    if(pt<=0) return;
+    const d=document.createElement('div'); d.className='r'+(big?' big':'');
+    d.innerHTML='<span>'+label+'</span><span>+'+pt+'</span>'; brk.appendChild(d);
+  };
+  addRow('参加賞', r.participation_pt);
+  addRow((r.current_streak)+'日連続ボーナス', r.streak_pt, true);
+  addRow('全問正解ボーナス', r.perfect_pt);
+  addRow('Unit制覇ボーナス', r.mastery_pt, true);
+  if(earned===0){
+    brk.innerHTML='<div class="r"><span>今日の参加賞・ボーナスは獲得ずみ</span><span>OK</span></div>';
   }
-  window._todayPt = r.points_earned || 0;
-  $('rStreak').textContent = r.current_streak+'日';
-  const lv = r.level_after;
+  window._todayPt = earned;
+  $('rStreak').textContent = (r.current_streak||0)+'日';
   if(r.level_after > r.level_before){ $('rLevel').textContent = r.level_before+' → '+r.level_after; }
-  else { $('rLevel').textContent = lv; }
-  // 次のレベルまで（200ptごと）
-  const total = profile ? profile.total_points : 0;
-  const into = total % 200;
-  $('rLvText').textContent = into+' / 200';
-  $('rLvBar').style.width = (into/200*100)+'%';
+  else { $('rLevel').textContent = r.level_after; }
+  // 次のレベルまで（50XPごと）
+  const xp = (typeof r.xp_total==='number') ? r.xp_total : (profile? (profile.xp||0):0);
+  const into = xp % 50;
+  $('rLvText').textContent = into+' / 50';
+  $('rLvBar').style.width = (into/50*100)+'%';
 }
 $('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
 
@@ -438,7 +527,7 @@ function renderMenu(){
     }
     grid.appendChild(d);
   });
-  $('mToday').textContent = '+'+todayPoints()+' pt';
+  $('mToday').textContent = '+'+todayPoints()+' XP';
 }
 
 let topicsBack = ()=>{ show('menu'); renderMenu(); };  // 分野/学年画面の「もどる」先
@@ -549,15 +638,22 @@ $('btnMyPage').addEventListener('click', ()=>{ renderMyPage(); show('mypage'); }
 $('btnBack').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
 function renderMyPage(){
   if(!profile) return;
+  const xp = profile.xp || 0;
+  const coin = profile.coin || 0;
   const code = (profile.student_code||'').replace(/\D/g,'').slice(-2) || profile.student_code;
   $('pAv').textContent = code;
   $('pName').textContent = profile.display_name || profile.student_code;
-  $('pSub').textContent = profile.grade + ' ・ レベル ' + (Math.floor(profile.total_points/200)+1);
-  $('pTotal').textContent = profile.total_points.toLocaleString() + ' pt';
+  $('pSub').textContent = profile.grade + ' ・ レベル ' + (Math.floor(xp/50)+1);
+  $('pTotal').textContent = xp.toLocaleString() + ' XP';
+  $('pCoin').textContent = coin.toLocaleString();
   $('pStreak').textContent = profile.current_streak + ' 日';
   $('pTotalDays').textContent = profile.total_days + ' 日';
   $('pBest').textContent = profile.longest_streak + ' 日';
 }
+// ポイントの貯め方ガイド
+$('btnGuide').addEventListener('click', ()=> show('guide'));
+$('btnGuideBack').addEventListener('click', ()=>{ renderMyPage(); show('mypage'); });
+$('btnGuideBack2').addEventListener('click', ()=>{ renderMyPage(); show('mypage'); });
 
 // ---------- ログアウト ----------
 $('btnLogout').addEventListener('click', async ()=>{
