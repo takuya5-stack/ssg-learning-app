@@ -228,6 +228,7 @@
     </div>
     <div class="navbtns" style="margin:0 0 18px;">
       <button class="ghost" id="btnMyPage"><i class="ti ti-user"></i> マイページ</button>
+      <button class="ghost" id="btnLogoutMenu"><i class="ti ti-logout"></i> ログアウト</button>
     </div>
     <p class="muted" style="margin:0 0 12px;">教科をえらぶ</p>
     <div class="grid" id="mGrid"></div>
@@ -666,10 +667,13 @@ $('btnGuideBack').addEventListener('click', ()=>{ renderMyPage(); show('mypage')
 $('btnGuideBack2').addEventListener('click', ()=>{ renderMyPage(); show('mypage'); });
 
 // ---------- ログアウト ----------
-$('btnLogout').addEventListener('click', async ()=>{
+async function doLogout(){
+  if(!confirm('ログアウトしますか？')) return;
   await sb.auth.signOut();
   location.reload();
-});
+}
+$('btnLogout').addEventListener('click', doLogout);
+$('btnLogoutMenu').addEventListener('click', doLogout);
 </script>
 </body>
 </html>
