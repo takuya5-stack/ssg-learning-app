@@ -52,6 +52,11 @@
   .wordcard{background:#fff; border-radius:16px; padding:28px 14px; text-align:center; margin-bottom:20px;}
   .wordcard .ask{font-size:12px; color:#5F7385;}
   .wordcard .word{font-size:40px; font-weight:700; color:var(--navy-deep); margin-top:8px; letter-spacing:.5px; word-break:break-word;}
+  .spk{margin-top:14px; background:var(--navy-deep); color:#fff; border:none; border-radius:999px;
+    padding:9px 18px; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+  .spk i{color:var(--orange); font-size:18px;}
+  .spk:active{transform:scale(.96);} .spk[disabled]{display:none;}
+  .spk.playing i{color:#2fbf6e;}
   .opts{display:flex; flex-direction:column; gap:11px;}
   .opt{text-align:left; padding:15px 16px; font-size:16px; border-radius:14px;
     background:var(--navy-card); color:#fff; border:1px solid var(--navy-line); cursor:pointer;}
@@ -182,6 +187,7 @@
     <div class="wordcard">
       <span class="ask" id="qAsk">この意味は？</span>
       <div class="word" id="qWord">—</div>
+      <button class="spk" id="qSpk" title="音声を聞く"><i class="ti ti-volume"></i> 音声</button>
     </div>
     <div class="opts" id="qOpts"></div>
     <p class="qnote">全問正解でボーナス ・ 苦手はまた明日出ます</p>
@@ -424,6 +430,18 @@ $('btnQuizBack').addEventListener('click', ()=>{
   }
 });
 
+// ---------- 音声（英単語の発音） ----------
+const AUDIO_BASE = 'audio/';   // GitHub Pages上の audio/{question_id}.mp3
+const wordAudio = new Audio();
+wordAudio.addEventListener('ended', ()=> $('qSpk').classList.remove('playing'));
+wordAudio.addEventListener('error', ()=> $('qSpk').classList.remove('playing'));
+function playWord(){
+  if(wordAudio.dataset.ok==='no') return;   // 音声が無い問題は何もしない
+  try{ wordAudio.currentTime = 0; const p = wordAudio.play();
+    if(p) p.then(()=>$('qSpk').classList.add('playing')).catch(()=>{}); }catch(e){}
+}
+$('qSpk').addEventListener('click', playWord);
+
 function renderQuestion(){
   const q = questions[idx];
   $('qCount').textContent = 'Q'+(idx+1)+' / '+questions.length;
@@ -431,6 +449,17 @@ function renderQuestion(){
   const w = $('qWord');
   w.textContent = q.prompt;
   w.style.fontSize = q.prompt.length > 10 ? '22px' : '40px';   // 長い問題文（社会など）は小さめに
+  // 英語のみ音声ボタン。question_id で mp3 を引く
+  const spk = $('qSpk');
+  if(currentSubject === 'english'){
+    spk.disabled = false;
+    wordAudio.dataset.ok = 'yes';
+    wordAudio.src = AUDIO_BASE + q.question_id + '.mp3';
+    spk.classList.remove('playing');
+    playWord();   // 出題時に自動再生（ブロックされたらボタンで再生可）
+  } else {
+    spk.disabled = true;
+  }
   const wrap = $('qOpts'); wrap.innerHTML='';
   (q.choices||[]).forEach(choice=>{
     const b = document.createElement('button');
