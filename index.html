@@ -222,7 +222,8 @@
       <div class="head"><span>次のレベルまで</span><span id="rLvText">0 / 50</span></div>
       <div class="bar"><div id="rLvBar" style="width:0%"></div></div>
     </div>
-    <button class="btn" id="btnToMenu">つぎへ</button>
+    <button class="btn" id="btnRetry">もう一度</button>
+    <button class="ghost" id="btnToMenu" style="width:100%; margin-top:10px;">メニューへ戻る</button>
   </div>
 
   <!-- 教科メニュー -->
@@ -535,6 +536,10 @@ function renderResult(r){
     brk.innerHTML='<div class="r"><span>今日の参加賞・ボーナスは獲得ずみ</span><span>OK</span></div>';
   }
   window._todayPt = earned;
+  // 「もう一度」ボタンの表示（地理なら地理、Unit1ならUnit1）
+  const sub = SUBJECTS.find(s=>s.slug===currentSubject);
+  const rangeName = currentUnit || (sub ? sub.nm : '');
+  $('btnRetry').innerHTML = '<i class="ti ti-refresh"></i> ' + (rangeName ? '「'+rangeName+'」をもう一度' : 'もう一度');
   $('rStreak').textContent = (r.current_streak||0)+'日';
   if(r.level_after > r.level_before){ $('rLevel').textContent = r.level_before+' → '+r.level_after; }
   else { $('rLevel').textContent = r.level_after; }
@@ -545,6 +550,8 @@ function renderResult(r){
   $('rLvBar').style.width = (into/50*100)+'%';
 }
 $('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
+// 同じ分野/Unitをもう一度（地理なら地理、Unit1ならUnit1）
+$('btnRetry').addEventListener('click', ()=> startQuiz(currentSubject, currentUnit, currentGrade));
 
 // ---------- 教科メニュー ----------
 const GRADES = ['中1','中2','中3'];
