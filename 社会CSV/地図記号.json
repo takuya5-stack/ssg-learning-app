@@ -1,0 +1,16 @@
+[
+{"a":"神社","img":"img/sym_jinja.svg","choices":["神社","寺院","郵便局","交番"]},
+{"a":"寺院","img":"img/sym_tera.svg","choices":["寺院","神社","高等学校","図書館"]},
+{"a":"小・中学校","img":"img/sym_gakko.svg","choices":["小・中学校","高等学校","図書館","博物館"]},
+{"a":"高等学校","img":"img/sym_koko.svg","choices":["高等学校","小・中学校","郵便局","交番"]},
+{"a":"郵便局","img":"img/sym_yubin.svg","choices":["郵便局","交番","警察署","神社"]},
+{"a":"交番","img":"img/sym_koban.svg","choices":["交番","警察署","郵便局","寺院"]},
+{"a":"警察署","img":"img/sym_keisatsu.svg","choices":["警察署","交番","郵便局","図書館"]},
+{"a":"図書館","img":"img/sym_toshokan.svg","choices":["図書館","博物館","寺院","小・中学校"]},
+{"a":"針葉樹林","img":"img/sym_shinyo.svg","choices":["針葉樹林","広葉樹林","果樹園","茶畑"]},
+{"a":"広葉樹林","img":"img/sym_koyo.svg","choices":["広葉樹林","針葉樹林","果樹園","田"]},
+{"a":"茶畑","img":"img/sym_chabatake.svg","choices":["茶畑","果樹園","田","広葉樹林"]},
+{"a":"果樹園","img":"img/sym_kajuen.svg","choices":["果樹園","茶畑","針葉樹林","田"]},
+{"a":"田","img":"img/sym_suiden.svg","choices":["田","果樹園","茶畑","畑"]},
+{"a":"博物館","img":"img/sym_hakubutsukan.svg","choices":["博物館","図書館","高等学校","神社"]}
+]
