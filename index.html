@@ -340,6 +340,7 @@
     <div class="grow"><span class="gt">参加賞（クイズ1セット）<span class="sub">1日1回</span></span><span class="gp">+1</span></div>
 
     <div class="gsec"><i class="ti ti-star"></i> がんばりボーナス</div>
+    <div class="grow"><span class="gt">6問以上せいかい<span class="sub">クイズごとに毎回</span></span><span class="gp">+1</span></div>
     <div class="grow"><span class="gt">10問ぜんぶ正解<span class="sub">同じUnitで1日1回</span></span><span class="gp">+5</span></div>
     <div class="grow"><span class="gt">Unit制覇（全単語を正解）<span class="sub">一生に1回だけ</span></span><span class="gp">+5</span></div>
 
@@ -570,11 +571,12 @@ function renderResult(r){
   // 内訳
   const brk = $('rBreak'); brk.innerHTML='';
   const addRow = (label, pt, big)=>{
-    if(pt<=0) return;
+    if(!pt || pt<=0) return;
     const d=document.createElement('div'); d.className='r'+(big?' big':'');
     d.innerHTML='<span>'+label+'</span><span>+'+pt+'</span>'; brk.appendChild(d);
   };
   addRow('参加賞', r.participation_pt);
+  addRow('6問以上正解ボーナス', r.score_pt);
   addRow((r.current_streak)+'日連続ボーナス', r.streak_pt, true);
   addRow('全問正解ボーナス', r.perfect_pt);
   addRow('Unit制覇ボーナス', r.mastery_pt, true);
