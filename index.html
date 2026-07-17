@@ -745,7 +745,8 @@ async function showUnits(s, grade, opts){
   try {
     const [{ data: qs }, prg] = await Promise.all([
       sb.from('questions').select('id,unit,subjects!inner(slug)')
-        .eq('subjects.slug', s.slug).eq('grade', grade).eq('is_active', true),
+        .eq('subjects.slug', s.slug).eq('grade', grade).eq('is_active', true)
+        .in('unit', unitList),   // 表示中のUnit/パートだけに限定（全件だと1000行上限に当たりPart5以降が0/0になる）
       profile ? sb.from('student_question_progress').select('question_id,last_result')
         .eq('student_id', profile.id) : Promise.resolve({ data: [] }),
     ]);
