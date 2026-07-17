@@ -419,9 +419,22 @@ async function login(){
   if(!id || !pin){ $('loginErr').textContent='IDとPINを入れてね'; return; }
   $('btnLogin').disabled = true; $('btnLogin').textContent='…';
   const email = id + '@' + EMAIL_DOMAIN;
-  const { error } = await sb.auth.signInWithPassword({ email, password: pin });
+  let error = null;
+  try {
+    const res = await sb.auth.signInWithPassword({ email, password: pin });
+    error = res.error;
+  } catch(e){ error = e; }
   $('btnLogin').disabled = false; $('btnLogin').textContent='スタート！';
-  if(error){ $('loginErr').textContent='IDかPINがちがうみたい'; return; }
+  if(error){
+    const st = error.status || 0;
+    // 400/401=本当にID/PINが違う。それ以外(サーバー500・停止・通信不良)は別表示に
+    if(st === 400 || st === 401){
+      $('loginErr').textContent='IDかPINがちがうみたい';
+    } else {
+      $('loginErr').textContent='いまサーバーが混み合っているみたい。少し待ってからもう一度ためしてね。';
+    }
+    return;
+  }
   await claimLoginBonus();
   await loadProfile();
   show('menu'); renderMenu();   // ログイン後はメニューへ（教科→分野→学年を選ぶ）
