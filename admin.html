@@ -171,11 +171,15 @@
     <div class="card" style="overflow-x:auto;">
       <table>
         <thead><tr>
-          <th>ID</th><th>名前</th><th>学年</th><th>合計pt</th><th>連続</th><th>通算</th><th>最終実施</th>
+          <th>ID</th><th>名前</th><th>学年</th><th>PIN</th><th>合計pt</th><th>連続</th><th>通算</th><th>最終実施</th><th>配布</th>
         </tr></thead>
-        <tbody id="studentRows"><tr><td colspan="7" class="hint">読み込み中…</td></tr></tbody>
+        <tbody id="studentRows"><tr><td colspan="9" class="hint">読み込み中…</td></tr></tbody>
       </table>
-      <button class="btn sub" id="btnReloadStudents" style="margin-top:14px; font-size:13px; padding:8px 14px;">更新</button>
+      <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+        <button class="btn sub" id="btnReloadStudents" style="font-size:13px; padding:8px 14px;">更新</button>
+        <button class="btn sub" id="btnCopyAll" style="font-size:13px; padding:8px 14px;"><i class="ti ti-copy"></i> 全員ぶんコピー</button>
+      </div>
+      <div class="hint" id="copyMsg" style="margin-top:8px;">「配布」のコピーで、その生徒に送れるログイン情報（URL＋ID＋PIN）がコピーされます。</div>
     </div>
 
   </div>
@@ -185,6 +189,8 @@
 const SUPABASE_URL = "https://ewreqtxpswincicadotj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_K_YR6ghUr13Pn3yqqtvLcQ_xpe8iwCv";
 const EMAIL_DOMAIN = "ssg.local";
+const STUDENT_PIN = "123456";   // 生徒PINは全員共通（変更したらここも直す）
+const APP_URL = "https://takuya5-stack.github.io/ssg-learning-app/";   // 生徒用ログインURL
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
@@ -339,23 +345,51 @@ async function loadCounts(){
 
 // ---------- 生徒一覧 ----------
 $('btnReloadStudents').addEventListener('click', loadStudents);
+let studentList = [];   // 直近の取得結果（配布コピー用）
+
+// 生徒に送れるログイン情報テキストを作る
+function loginInfoText(s){
+  return 'SSG学習アプリ\nURL: '+APP_URL+'\nID: '+s.student_code+'\nPIN: '+STUDENT_PIN;
+}
+async function copyText(text, okMsg){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  const m=$('copyMsg'); if(m){ m.textContent = okMsg; m.classList.remove('err'); setTimeout(()=>{ m.textContent='「配布」のコピーで、その生徒に送れるログイン情報（URL＋ID＋PIN）がコピーされます。'; }, 4000); }
+}
+
 async function loadStudents(){
   const { data, error } = await sb.from('students')
     .select('student_code,display_name,grade,total_points,current_streak,total_days,last_done_date')
-    .order('total_points', { ascending:false });
+    .order('student_code', { ascending:true });
   const tb = $('studentRows');
-  if(error){ tb.innerHTML=`<tr><td colspan="7" class="msg err">${error.message}</td></tr>`; return; }
-  if(!data || data.length===0){ tb.innerHTML=`<tr><td colspan="7" class="hint">まだ生徒がいません</td></tr>`; return; }
+  if(error){ tb.innerHTML=`<tr><td colspan="9" class="msg err">${error.message}</td></tr>`; return; }
+  if(!data || data.length===0){ tb.innerHTML=`<tr><td colspan="9" class="hint">まだ生徒がいません</td></tr>`; return; }
+  studentList = data;
   tb.innerHTML = data.map(s=>`<tr>
     <td>${s.student_code}</td>
     <td>${s.display_name||'-'}</td>
     <td>${s.grade||'-'}</td>
+    <td style="font-variant-numeric:tabular-nums;">${STUDENT_PIN}</td>
     <td class="pt">${(s.total_points||0).toLocaleString()}</td>
     <td>${s.current_streak||0}日</td>
     <td>${s.total_days||0}日</td>
     <td>${s.last_done_date||'-'}</td>
+    <td><button class="btn sub copybtn" data-code="${s.student_code}" style="font-size:12px; padding:5px 10px;"><i class="ti ti-copy"></i> コピー</button></td>
   </tr>`).join('');
 }
+
+// 「配布」1人ぶんコピー（イベント委譲）
+$('studentRows').addEventListener('click', e=>{
+  const b = e.target.closest('.copybtn'); if(!b) return;
+  const s = studentList.find(x=>x.student_code===b.dataset.code); if(!s) return;
+  copyText(loginInfoText(s), (s.display_name||s.student_code)+' のログイン情報をコピーしました');
+});
+// 全員ぶんコピー
+$('btnCopyAll').addEventListener('click', ()=>{
+  if(!studentList.length){ return; }
+  const all = studentList.map(s=>(s.display_name||s.student_code)+'\n'+loginInfoText(s)).join('\n\n──────────\n\n');
+  copyText(all, studentList.length+'人ぶんのログイン情報をコピーしました');
+});
 </script>
 </body>
 </html>
