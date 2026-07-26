@@ -615,7 +615,10 @@ const SUBJECTS = [
    }},
   {slug:'math', nm:'数学', icon:'ti-math', on:false, c:'#39B2F5', ct:'#DDF0FE'},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:true, c:'#FF6FA5', ct:'#FFE3EF',
-   topics:['形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']},
+   cats:[
+     {name:'漢字', topics:[]},   // 準備中（中身を入れたら topics に分野名を追加）
+     {name:'古文', topics:['形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']}
+   ]},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false, c:'#25C186', ct:'#DDF6EC'},
   {slug:'social', nm:'社会', icon:'ti-globe', on:true, c:'#8C6BEE', ct:'#ECE6FE', topics:['地理','歴史','公民']},
   {slug:'eiken', nm:'英検', icon:'ti-certificate', on:false, c:'#F35247', ct:'#FFE2E0'},
@@ -635,6 +638,7 @@ function renderMenu(){
       d.querySelector('.st').style.color = s.c;
       d.addEventListener('click', ()=>{
         if(s.gradeFirst){ showGradeList(s); }// 学年→Unit の階層（英語）
+        else if(s.cats){ showCategories(s); }// 大分類（国語の 漢字/古文）
         else if(s.topics){ showTopics(s); }  // 分野があるなら分野選択へ
         else { startQuiz(s.slug); }          // なければ即出題
       });
@@ -661,6 +665,43 @@ function showTopics(s){
     wrap.appendChild(b);
   });
   topicsBack = ()=>{ show('menu'); renderMenu(); };
+  show('topics');
+}
+
+// 大分類選択（国語の 漢字 / 古文）
+function showCategories(s){
+  $('tpTitle').textContent = s.nm + '｜えらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  s.cats.forEach(cat=>{
+    const has = cat.topics && cat.topics.length>0;
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    const sub = has ? (cat.topics.length+'分野') : '準備中';
+    b.innerHTML = '<span>'+cat.name+'<span style="display:block; font-size:12px; color:var(--muted2); font-weight:600; margin-top:2px;">'+sub+'</span></span><i class="ti ti-chevron-right"></i>';
+    if(has){
+      b.addEventListener('click', ()=> showCatTopics(s, cat));
+    } else {
+      b.style.opacity = '.55';
+      b.addEventListener('click', ()=> alert(cat.name+'はまだ準備中です。'));
+    }
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ show('menu'); renderMenu(); };
+  show('topics');
+}
+
+// 大分類の中の分野選択（古文の6分野など）
+function showCatTopics(s, cat){
+  $('tpTitle').textContent = s.nm + '｜' + cat.name + '｜分野をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  cat.topics.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+t+'</span><i class="ti ti-chevron-right"></i>';
+    b.addEventListener('click', ()=> startQuiz(s.slug, t));
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ showCategories(s); };
   show('topics');
 }
 
