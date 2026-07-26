@@ -466,7 +466,7 @@ async function startQuiz(slug, unit, grade){
   const s = SUBJECTS.find(x=>x.slug===currentSubject);
   const nm = s ? s.nm : '問題';
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
-  $('qAsk').textContent = (currentSubject==='english') ? 'この意味は？' : '答えをえらぼう';
+  $('qAsk').textContent = (currentSubject==='english'||currentSubject==='japanese') ? 'この意味は？' : '答えをえらぼう';
   questions = data; idx = 0; answers = [];
   show('quiz');
   renderQuestion();
@@ -614,7 +614,8 @@ const SUBJECTS = [
      '中1':['Part1','Part2','Part3','Part4','Part5','Part6','Part7','Part8']
    }},
   {slug:'math', nm:'数学', icon:'ti-math', on:false, c:'#39B2F5', ct:'#DDF0FE'},
-  {slug:'japanese', nm:'国語', icon:'ti-book', on:false, c:'#FF6FA5', ct:'#FFE3EF'},
+  {slug:'japanese', nm:'国語', icon:'ti-book', on:true, c:'#FF6FA5', ct:'#FFE3EF',
+   topics:['形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false, c:'#25C186', ct:'#DDF6EC'},
   {slug:'social', nm:'社会', icon:'ti-globe', on:true, c:'#8C6BEE', ct:'#ECE6FE', topics:['地理','歴史','公民']},
   {slug:'eiken', nm:'英検', icon:'ti-certificate', on:false, c:'#F35247', ct:'#FFE2E0'},
