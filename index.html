@@ -690,19 +690,46 @@ function showCategories(s){
   show('topics');
 }
 
-// 大分類の中の分野選択（古文の6分野など）
-function showCatTopics(s, cat){
+// 大分類の中の分野選択（古文の6分野など）。各分野に「正解数/総語数」を表示
+async function showCatTopics(s, cat){
   $('tpTitle').textContent = s.nm + '｜' + cat.name + '｜分野をえらぶ';
   const wrap = $('tpGrid'); wrap.innerHTML='';
-  cat.topics.forEach(t=>{
+  const grade = '';                 // 国語は学年なし（grade空で登録）
+  const unitList = cat.topics;
+  const badge = {};
+  unitList.forEach(t=>{
     const b = document.createElement('button');
     b.className = 'topicbtn';
-    b.innerHTML = '<span>'+t+'</span><i class="ti ti-chevron-right"></i>';
-    b.addEventListener('click', ()=> startQuiz(s.slug, t));
+    b.innerHTML = '<span>'+t+'</span><span class="rt"><span class="prog">…</span>'
+      + '<i class="ti ti-chevron-right"></i></span>';
+    b.addEventListener('click', ()=> startQuiz(s.slug, t, grade));
+    badge[t] = b.querySelector('.prog');
     wrap.appendChild(b);
   });
   topicsBack = ()=>{ showCategories(s); };
   show('topics');
+
+  // 各分野の 正解数/総語数（英語のUnitバッジと同じ方式。分子=last_result=trueの語数）
+  try {
+    const [{ data: qs }, prg] = await Promise.all([
+      sb.from('questions').select('id,unit,subjects!inner(slug)')
+        .eq('subjects.slug', s.slug).eq('grade', grade).eq('is_active', true)
+        .in('unit', unitList),
+      profile ? sb.from('student_question_progress').select('question_id,last_result')
+        .eq('student_id', profile.id) : Promise.resolve({ data: [] }),
+    ]);
+    const unitOf = {}, totals = {}, corrects = {};
+    (qs||[]).forEach(q=>{ unitOf[q.id]=q.unit; totals[q.unit]=(totals[q.unit]||0)+1; });
+    (prg.data||[]).forEach(p=>{ if(p.last_result===true){ const u=unitOf[p.question_id]; if(u) corrects[u]=(corrects[u]||0)+1; } });
+    unitList.forEach(u=>{
+      const tot = totals[u]||0, cor = corrects[u]||0;
+      const el = badge[u]; if(!el) return;
+      el.textContent = cor+'/'+tot;
+      el.classList.toggle('done', tot>0 && cor===tot);
+    });
+  } catch(e){
+    unitList.forEach(u=>{ if(badge[u]) badge[u].textContent=''; });
+  }
 }
 
 // 学年選択（英語の 中1/中2/中3）
