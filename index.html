@@ -466,7 +466,10 @@ async function startQuiz(slug, unit, grade){
   const s = SUBJECTS.find(x=>x.slug===currentSubject);
   const nm = s ? s.nm : '問題';
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
-  $('qAsk').textContent = (currentSubject==='english'||currentSubject==='japanese') ? 'この意味は？' : '答えをえらぼう';
+  // 英語=意味／国語の漢字(grade有)=読み／国語の古文(grade無)=意味／その他=選択
+  $('qAsk').textContent = currentSubject==='english' ? 'この意味は？'
+    : currentSubject==='japanese' ? (currentGrade ? 'この読みは？' : 'この意味は？')
+    : '答えをえらぼう';
   questions = data; idx = 0; answers = [];
   show('quiz');
   renderQuestion();
@@ -616,7 +619,10 @@ const SUBJECTS = [
   {slug:'math', nm:'数学', icon:'ti-math', on:false, c:'#39B2F5', ct:'#DDF0FE'},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:true, c:'#FF6FA5', ct:'#FFE3EF',
    cats:[
-     {name:'漢字', topics:[]},   // 準備中（中身を入れたら topics に分野名を追加）
+     // 漢字は 学年→単元 の階層（gradeUnits）。grade=中1等・unit=単元名 で登録
+     {name:'漢字', gradeUnits:{
+       '中1':['はじまりの風','漢字に親しもう1','ちょっと立ち止まって','言葉と表現技法','情報を集めて伝える','大人になれなかった弟たちに','星の花が降るころに','「言葉」をもつ鳥','竹取物語（蓬莱の玉の枝）','今に生きる言葉','研究の現場にようこそ','少年の日の思い出','二十歳になった日']
+     }},
      {name:'古文', topics:['形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']}
    ]},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false, c:'#25C186', ct:'#DDF6EC'},
@@ -673,13 +679,15 @@ function showCategories(s){
   $('tpTitle').textContent = s.nm + '｜えらぶ';
   const wrap = $('tpGrid'); wrap.innerHTML='';
   s.cats.forEach(cat=>{
-    const has = cat.topics && cat.topics.length>0;
+    const isKanji = !!cat.gradeUnits;                 // 漢字は 学年→単元 の階層
+    const gradeCount = isKanji ? Object.keys(cat.gradeUnits).filter(g=>(cat.gradeUnits[g]||[]).length>0).length : 0;
+    const has = isKanji ? gradeCount>0 : (cat.topics && cat.topics.length>0);
     const b = document.createElement('button');
     b.className = 'topicbtn';
-    const sub = has ? (cat.topics.length+'分野') : '準備中';
+    const sub = isKanji ? (gradeCount+'学年') : (has ? (cat.topics.length+'分野') : '準備中');
     b.innerHTML = '<span>'+cat.name+'<span style="display:block; font-size:12px; color:var(--muted2); font-weight:600; margin-top:2px;">'+sub+'</span></span><i class="ti ti-chevron-right"></i>';
     if(has){
-      b.addEventListener('click', ()=> showCatTopics(s, cat));
+      b.addEventListener('click', ()=> isKanji ? showKanjiGrades(s, cat) : showCatTopics(s, cat));
     } else {
       b.style.opacity = '.55';
       b.addEventListener('click', ()=> alert(cat.name+'はまだ準備中です。'));
@@ -710,6 +718,66 @@ async function showCatTopics(s, cat){
   show('topics');
 
   // 各分野の 正解数/総語数（英語のUnitバッジと同じ方式。分子=last_result=trueの語数）
+  try {
+    const [{ data: qs }, prg] = await Promise.all([
+      sb.from('questions').select('id,unit,subjects!inner(slug)')
+        .eq('subjects.slug', s.slug).eq('grade', grade).eq('is_active', true)
+        .in('unit', unitList),
+      profile ? sb.from('student_question_progress').select('question_id,last_result')
+        .eq('student_id', profile.id) : Promise.resolve({ data: [] }),
+    ]);
+    const unitOf = {}, totals = {}, corrects = {};
+    (qs||[]).forEach(q=>{ unitOf[q.id]=q.unit; totals[q.unit]=(totals[q.unit]||0)+1; });
+    (prg.data||[]).forEach(p=>{ if(p.last_result===true){ const u=unitOf[p.question_id]; if(u) corrects[u]=(corrects[u]||0)+1; } });
+    unitList.forEach(u=>{
+      const tot = totals[u]||0, cor = corrects[u]||0;
+      const el = badge[u]; if(!el) return;
+      el.textContent = cor+'/'+tot;
+      el.classList.toggle('done', tot>0 && cor===tot);
+    });
+  } catch(e){
+    unitList.forEach(u=>{ if(badge[u]) badge[u].textContent=''; });
+  }
+}
+
+// 漢字：学年選択（国語→漢字→中1/中2/中3）
+function showKanjiGrades(s, cat){
+  $('tpTitle').textContent = s.nm + '｜' + cat.name + '｜学年をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  GRADES.forEach(g=>{
+    const list = cat.gradeUnits[g] || [];
+    const ready = list.length>0;
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    const sub = ready ? (list.length+'単元') : '準備中';
+    b.innerHTML = '<span>'+g+'<span style="display:block; font-size:12px; color:var(--muted2); font-weight:600; margin-top:2px;">'+sub+'</span></span><i class="ti ti-chevron-right"></i>';
+    if(ready){ b.addEventListener('click', ()=> showKanjiUnits(s, cat, g)); }
+    else { b.style.opacity='.55'; b.addEventListener('click', ()=> alert(g+'はまだ準備中です。')); }
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ showCategories(s); };
+  show('topics');
+}
+
+// 漢字：単元選択（学年の中の教科書単元）。各単元に「正解数/総数」を表示
+async function showKanjiUnits(s, cat, grade){
+  $('tpTitle').textContent = s.nm + '｜' + cat.name + '｜' + grade + '｜単元をえらぶ';
+  const wrap = $('tpGrid'); wrap.innerHTML='';
+  const unitList = cat.gradeUnits[grade] || [];
+  const badge = {};
+  unitList.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'topicbtn';
+    b.innerHTML = '<span>'+t+'</span><span class="rt"><span class="prog">…</span>'
+      + '<i class="ti ti-chevron-right"></i></span>';
+    b.addEventListener('click', ()=> startQuiz(s.slug, t, grade));
+    badge[t] = b.querySelector('.prog');
+    wrap.appendChild(b);
+  });
+  topicsBack = ()=>{ showKanjiGrades(s, cat); };
+  show('topics');
+
+  // 各単元の 正解数/総数（英語Unitと同じ方式。grade で限定）
   try {
     const [{ data: qs }, prg] = await Promise.all([
       sb.from('questions').select('id,unit,subjects!inner(slug)')
