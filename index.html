@@ -86,6 +86,18 @@
   .opt.wrong::after{content:" ×"; font-weight:800;}
   .opt[disabled]{cursor:default; opacity:1;}
   .opt[disabled]:not(.right):not(.wrong){opacity:.42;}
+  /* 漢字の読み＝入力式 */
+  .ansform{display:flex; gap:10px; align-items:stretch;}
+  .ansinput{flex:1; min-width:0; padding:16px; font-size:24px; font-weight:800; text-align:center;
+    border-radius:16px; border:2px solid var(--line); background:#FCFAF4; color:var(--ink); box-shadow:var(--shadow-sm);}
+  .ansinput:focus{outline:none; border-color:#FF6FA5;}
+  .ansinput[disabled]{opacity:1;}
+  .ansbtn{padding:0 22px; font-size:16px; font-weight:800; border:none; border-radius:16px; white-space:nowrap;
+    background:#FF6FA5; color:#fff; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .1s;}
+  .ansbtn:active{transform:scale(.98);} .ansbtn[disabled]{opacity:.5; cursor:default;}
+  .ansfb{margin-top:16px; text-align:center; font-size:22px; font-weight:800; min-height:30px;}
+  .ansfb.ok{color:var(--green);} .ansfb.ng{color:var(--red);}
+  .ansfb small{display:block; font-size:14px; font-weight:700; color:var(--muted2); margin-top:4px;}
   .qnote{text-align:center; font-size:12px; color:var(--muted2); margin-top:18px; font-weight:600;}
 
   /* result */
@@ -468,7 +480,7 @@ async function startQuiz(slug, unit, grade){
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
   // 英語=意味／国語の漢字(grade有)=読み／国語の古文(grade無)=意味／その他=選択
   $('qAsk').textContent = currentSubject==='english' ? 'この意味は？'
-    : currentSubject==='japanese' ? (currentGrade ? 'この読みは？' : 'この意味は？')
+    : currentSubject==='japanese' ? (currentGrade ? '読みをひらがなで入力' : 'この意味は？')
     : '答えをえらぼう';
   questions = data; idx = 0; answers = [];
   show('quiz');
@@ -522,6 +534,24 @@ function renderQuestion(){
     spk.disabled = true;
   }
   const wrap = $('qOpts'); wrap.innerHTML='';
+  // 漢字（国語・学年あり）は読みを入力式に。それ以外は4択
+  if(currentSubject==='japanese' && currentGrade){
+    const form = document.createElement('div'); form.className='ansform';
+    const inp = document.createElement('input');
+    inp.className='ansinput'; inp.id='qInput'; inp.type='text';
+    inp.setAttribute('inputmode','kana'); inp.autocomplete='off';
+    inp.autocapitalize='off'; inp.spellcheck=false; inp.enterKeyHint='done';
+    inp.placeholder='ひらがな';
+    inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); submitInput(); } });
+    const btn = document.createElement('button');
+    btn.className='ansbtn'; btn.id='qSubmit'; btn.textContent='こたえる';
+    btn.addEventListener('click', submitInput);
+    form.appendChild(inp); form.appendChild(btn);
+    const fb = document.createElement('div'); fb.className='ansfb'; fb.id='qFb';
+    wrap.appendChild(form); wrap.appendChild(fb);
+    setTimeout(()=>{ try{ inp.focus(); }catch(e){} }, 60);
+    return;
+  }
   (q.choices||[]).forEach(choice=>{
     const b = document.createElement('button');
     b.className='opt'; b.textContent=choice;
@@ -529,6 +559,35 @@ function renderQuestion(){
     b.addEventListener('click', ()=>pick(b, choice));
     wrap.appendChild(b);
   });
+}
+
+// カタカナ→ひらがな・空白除去（採点はサーバーが文字列一致で行うため正規化値を送る）
+function toHira(s){
+  return (s||'').replace(/\s+/g,'').replace(/[ァ-ヶ]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+}
+// 入力式（漢字の読み）の回答処理
+function submitInput(){
+  const q = questions[idx];
+  const inp = $('qInput'), btn = $('qSubmit'), fb = $('qFb');
+  if(!inp || inp.disabled) return;
+  const norm = toHira(inp.value);
+  const isOk = (norm !== '' && norm === toHira(q.answer));
+  answers.push({ question_id: q.question_id, answer: norm });   // 正規化値を送る＝サーバー採点と一致
+  inp.disabled = true; btn.disabled = true;
+  fb.classList.remove('ok','ng');
+  if(isOk){
+    fb.classList.add('ok'); fb.textContent = '○ 正解！';
+    inp.style.borderColor = 'var(--green)';
+  } else {
+    fb.classList.add('ng');
+    fb.innerHTML = '× 正しい読み：<span style="color:var(--green)">'+q.answer+'</span>';
+    inp.style.borderColor = 'var(--red)';
+  }
+  setTimeout(()=>{
+    idx++;
+    if(idx < questions.length){ renderQuestion(); }
+    else finishQuiz();
+  }, isOk ? 800 : 1500);
 }
 
 function pick(btn, choice){
