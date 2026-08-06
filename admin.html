@@ -171,9 +171,9 @@
     <div class="card" style="overflow-x:auto;">
       <table>
         <thead><tr>
-          <th>ID</th><th>名前</th><th>学年</th><th>PIN</th><th>合計pt</th><th>連続</th><th>通算</th><th>最終実施</th><th>配布</th>
+          <th>ID</th><th>名前</th><th>学年</th><th>PIN</th><th>合計pt</th><th>連続</th><th>通算</th><th>最終実施</th><th>配布</th><th>在籍</th>
         </tr></thead>
-        <tbody id="studentRows"><tr><td colspan="9" class="hint">読み込み中…</td></tr></tbody>
+        <tbody id="studentRows"><tr><td colspan="10" class="hint">読み込み中…</td></tr></tbody>
       </table>
       <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
         <button class="btn sub" id="btnReloadStudents" style="font-size:13px; padding:8px 14px;">更新</button>
@@ -358,25 +358,36 @@ async function copyText(text, okMsg){
 }
 
 async function loadStudents(){
-  const { data, error } = await sb.from('students')
-    .select('student_code,display_name,grade,total_points,current_streak,total_days,last_done_date,is_enrolled')
-    .order('student_code', { ascending:true });
+  const cols = 'student_code,display_name,grade,total_points,current_streak,total_days,last_done_date';
   const tb = $('studentRows');
-  if(error){ tb.innerHTML=`<tr><td colspan="9" class="msg err">${error.message}</td></tr>`; return; }
-  if(!data || data.length===0){ tb.innerHTML=`<tr><td colspan="9" class="hint">まだ生徒がいません</td></tr>`; return; }
+  // is_enrolled 列がまだ無い環境でも一覧が壊れないように、失敗したら列なしで取り直す
+  let { data, error } = await sb.from('students').select(cols+',is_enrolled').order('student_code', { ascending:true });
+  let hasEnrollCol = !error;
+  if(error){
+    ({ data, error } = await sb.from('students').select(cols).order('student_code', { ascending:true }));
+  }
+  if(error){ tb.innerHTML=`<tr><td colspan="10" class="msg err">${error.message}</td></tr>`; return; }
+  if(!data || data.length===0){ tb.innerHTML=`<tr><td colspan="10" class="hint">まだ生徒がいません</td></tr>`; return; }
   // 退塾した生徒は薄く表示し、「全員ぶんコピー」の対象からも外す（記録は残す）
   studentList = data.filter(s=> s.is_enrolled !== false);
-  tb.innerHTML = data.map(s=>`<tr${s.is_enrolled===false ? ' style="opacity:.45;"' : ''}>
+  tb.innerHTML = data.map(s=>{
+    const left = s.is_enrolled === false;
+    const enrollCell = !hasEnrollCol
+      ? '<span class="hint">—</span>'
+      : `<button class="btn sub enrollbtn" data-code="${s.student_code}" data-next="${left?'1':'0'}" style="font-size:12px; padding:5px 10px;">${left ? '在籍にもどす' : '退塾にする'}</button>`;
+    return `<tr${left ? ' style="opacity:.45;"' : ''}>
     <td>${s.student_code}</td>
-    <td>${(s.display_name||'-')}${s.is_enrolled===false ? ' <span style="font-size:11px; font-weight:700; color:#8A85A0;">(退塾)</span>' : ''}</td>
+    <td>${(s.display_name||'-')}${left ? ' <span style="font-size:11px; font-weight:700; color:#8A85A0;">(退塾)</span>' : ''}</td>
     <td>${s.grade||'-'}</td>
     <td style="font-variant-numeric:tabular-nums;">${STUDENT_PIN}</td>
     <td class="pt">${(s.total_points||0).toLocaleString()}</td>
     <td>${s.current_streak||0}日</td>
     <td>${s.total_days||0}日</td>
     <td>${s.last_done_date||'-'}</td>
-    <td>${s.is_enrolled===false ? '<span class="hint">—</span>' : `<button class="btn sub copybtn" data-code="${s.student_code}" style="font-size:12px; padding:5px 10px;"><i class="ti ti-copy"></i> コピー</button>`}</td>
-  </tr>`).join('');
+    <td>${left ? '<span class="hint">—</span>' : `<button class="btn sub copybtn" data-code="${s.student_code}" style="font-size:12px; padding:5px 10px;"><i class="ti ti-copy"></i> コピー</button>`}</td>
+    <td>${enrollCell}</td>
+  </tr>`;
+  }).join('');
 }
 
 // 「配布」1人ぶんコピー（イベント委譲）
@@ -384,6 +395,21 @@ $('studentRows').addEventListener('click', e=>{
   const b = e.target.closest('.copybtn'); if(!b) return;
   const s = studentList.find(x=>x.student_code===b.dataset.code); if(!s) return;
   copyText(loginInfoText(s), (s.display_name||s.student_code)+' のログイン情報をコピーしました');
+});
+
+// 在籍 / 退塾 の切り替え（記録は消さずランキング・配布からの表示だけ変わる）
+$('studentRows').addEventListener('click', async e=>{
+  const b = e.target.closest('.enrollbtn'); if(!b) return;
+  const code = b.dataset.code;
+  const toEnrolled = b.dataset.next === '1';   // 1 = 在籍にもどす / 0 = 退塾にする
+  const msg = toEnrolled
+    ? `${code} を「在籍」にもどします。ランキングや配布の対象に入ります。よろしいですか？`
+    : `${code} を「退塾」にします。ランキングと配布の対象から外れます（学習記録は残ります）。よろしいですか？`;
+  if(!confirm(msg)) return;
+  b.disabled = true; b.textContent = '…';
+  const { error } = await sb.from('students').update({ is_enrolled: toEnrolled }).eq('student_code', code);
+  if(error){ alert('変更できませんでした：'+error.message); b.disabled = false; }
+  await loadStudents();
 });
 // 全員ぶんコピー
 $('btnCopyAll').addEventListener('click', ()=>{
