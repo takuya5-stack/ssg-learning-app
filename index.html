@@ -189,6 +189,22 @@
     border-radius:16px; padding:15px; font-size:15px; font-weight:800; cursor:pointer; margin-bottom:14px;
     display:flex; align-items:center; justify-content:center; gap:8px;}
   .guidebtn:active{transform:scale(.98);} .guidebtn i{color:var(--blue);}
+  /* ランキング */
+  .rankbtn{width:100%; background:var(--purple-tint); color:var(--ink); border:2px solid var(--purple-line);
+    border-radius:16px; padding:15px; font-size:15px; font-weight:800; cursor:pointer; margin-bottom:18px;
+    display:flex; align-items:center; justify-content:center; gap:8px;}
+  .rankbtn:active{transform:scale(.98);} .rankbtn i{color:var(--purple);}
+  .rankhint{text-align:center; font-size:12px; color:var(--muted2); margin:-10px 0 18px; font-weight:600;}
+  .rankrow{display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:16px;
+    background:#FCFAF4; border:2px solid var(--line); margin-bottom:10px;}
+  .rankrow.me{background:var(--purple-tint); border-color:var(--purple-line);}
+  .rankrow .rk{width:32px; flex-shrink:0; text-align:center; font-size:17px; font-weight:800; color:var(--muted);}
+  .rankrow.top1 .rk, .rankrow.top2 .rk, .rankrow.top3 .rk{font-size:24px;}
+  .rankrow .ri{flex:1; min-width:0;}
+  .rankrow .rn{font-size:15px; font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rankrow .rn .metag{font-size:11px; font-weight:800; color:var(--purple); background:#fff; border-radius:999px; padding:1px 8px; margin-left:6px;}
+  .rankrow .rg{font-size:11px; color:var(--muted2); font-weight:600; margin-top:1px;}
+  .rankrow .rp{font-size:16px; font-weight:800; color:var(--orange-deep); white-space:nowrap;}
   /* ガイド */
   .gsec{font-size:16px; font-weight:800; margin:20px 0 10px; display:flex; align-items:center; gap:7px;}
   .gsec i{color:var(--orange);}
@@ -281,10 +297,11 @@
       </div>
       <i class="ti ti-circle-check"></i>
     </div>
-    <div class="navbtns" style="margin:0 0 18px;">
+    <div class="navbtns" style="margin:0 0 14px;">
       <button class="ghost" id="btnMyPage"><i class="ti ti-user"></i> マイページ</button>
       <button class="ghost" id="btnLogoutMenu"><i class="ti ti-logout"></i> ログアウト</button>
     </div>
+    <button class="rankbtn" id="btnRanking"><i class="ti ti-trophy"></i> 塾内ランキング</button>
     <p class="muted" style="margin:0 0 12px; font-weight:600;">教科をえらぶ</p>
     <div class="grid" id="mGrid"></div>
   </div>
@@ -294,6 +311,14 @@
     <button class="quizback" id="btnTopicsBack"><i class="ti ti-arrow-left"></i> もどる</button>
     <p class="muted" id="tpTitle" style="margin:0 0 14px; font-weight:600;">分野をえらぶ</p>
     <div id="tpGrid" style="display:flex; flex-direction:column; gap:11px;"></div>
+  </div>
+
+  <!-- ランキング -->
+  <div class="screen" id="s-rank">
+    <button class="quizback" id="btnRankBack"><i class="ti ti-arrow-left"></i> もどる</button>
+    <p class="muted" style="margin:0 0 4px; font-weight:600;"><i class="ti ti-trophy" style="color:var(--purple);"></i> 塾内ランキング</p>
+    <p class="rankhint" style="margin:0 0 16px; text-align:left;">今週（月曜〜）に貯めたポイントの順位だよ</p>
+    <div id="rankList"></div>
   </div>
 
   <!-- マイページ -->
@@ -980,6 +1005,29 @@ $('btnTopicsBack').addEventListener('click', ()=> topicsBack());
 function todayPoints(){
   // 直近結果が無ければ 0。簡易表示（厳密値はマイページ参照）
   return window._todayPt || 0;
+}
+
+// ---------- ランキング ----------
+$('btnRanking').addEventListener('click', ()=>{ show('rank'); renderRanking(); });
+$('btnRankBack').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
+async function renderRanking(){
+  const wrap = $('rankList');
+  wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">読み込み中…</p>';
+  const { data, error } = await sb.rpc('get_weekly_ranking');
+  if(error || !data){ wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">読み込みに失敗しました。</p>'; return; }
+  if(data.length === 0){ wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">まだデータがありません。</p>'; return; }
+  const medal = { 1:'🥇', 2:'🥈', 3:'🥉' };
+  wrap.innerHTML = '';
+  data.forEach(row=>{
+    const div = document.createElement('div');
+    div.className = 'rankrow' + (row.is_me ? ' me' : '') + (row.rank<=3 ? ' top'+row.rank : '');
+    div.innerHTML =
+      '<div class="rk">'+(medal[row.rank] || row.rank+'位')+'</div>'+
+      '<div class="ri"><p class="rn">'+(row.display_name||'名無し')+(row.is_me ? '<span class="metag">あなた</span>' : '')+'</p>'+
+      '<p class="rg">'+(row.grade||'')+'</p></div>'+
+      '<div class="rp">+'+row.weekly_xp+'pt</div>';
+    wrap.appendChild(div);
+  });
 }
 
 // ---------- マイページ ----------
