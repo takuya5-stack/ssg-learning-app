@@ -229,7 +229,7 @@
       <h1>SSG学習アプリ</h1>
     </div>
     <label>生徒ID</label>
-    <input type="text" id="inId" autocapitalize="off" autocomplete="username" placeholder="student07">
+    <input type="text" id="inId" autocapitalize="off" autocomplete="username" placeholder="SSG01">
     <label>PIN（4桁）</label>
     <input type="password" id="inPin" inputmode="numeric" autocomplete="current-password" placeholder="••••">
     <div class="err" id="loginErr"></div>
@@ -398,7 +398,6 @@
 // ============================================================
 const SUPABASE_URL = "https://ewreqtxpswincicadotj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_K_YR6ghUr13Pn3yqqtvLcQ_xpe8iwCv";
-const EMAIL_DOMAIN = "ssg.local";   // ダミーメールのドメイン（schemaの方針と合わせる）
 
 // 教科ごとの見た目（ラベル等）。vocab=英単語型(意味), それ以外は汎用4択
 const SUBJECT_META = {
@@ -457,12 +456,25 @@ async function login(){
   $('loginErr').textContent = '';
   if(!id || !pin){ $('loginErr').textContent='IDとPINを入れてね'; return; }
   $('btnLogin').disabled = true; $('btnLogin').textContent='…';
-  const email = id + '@' + EMAIL_DOMAIN;
-  let error = null;
+  // 表示ID(student_code)→認証メールをRPCで解決（IDを自由に変えられるようにするため。実際のAuthメールは不変）
+  let email = null, error = null;
   try {
-    const res = await sb.auth.signInWithPassword({ email, password: pin });
-    error = res.error;
+    const { data, error: rpcErr } = await sb.rpc('get_login_email', { p_code: id });
+    if(rpcErr) throw rpcErr;
+    email = data || null;
   } catch(e){ error = e; }
+  if(!error){
+    if(!email){
+      // 該当IDなし＝PIN間違いと同じ表示にする（IDの存在有無を教えない）
+      $('btnLogin').disabled = false; $('btnLogin').textContent='スタート！';
+      $('loginErr').textContent='IDかPINがちがうみたい';
+      return;
+    }
+    try {
+      const res = await sb.auth.signInWithPassword({ email, password: pin });
+      error = res.error;
+    } catch(e){ error = e; }
+  }
   $('btnLogin').disabled = false; $('btnLogin').textContent='スタート！';
   if(error){
     const st = error.status || 0;
