@@ -614,14 +614,23 @@ function renderQuestion(){
 function toHira(s){
   return (s||'').replace(/\s+/g,'').replace(/[ァ-ヶ]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60));
 }
-// 入力式（漢字の読み）の回答処理
+// プロンプト末尾の送り仮名（ひらがな部分）を取り出す。無ければ空文字（例:「怖い」→「い」、「郊外」→''）
+function okuriganaOf(prompt){
+  const m = toHira(prompt).match(/[ぁ-んー]+$/);
+  return m ? m[0] : '';
+}
+// 入力式（漢字の読み）の回答処理。送り仮名は書いても書かなくても正解扱いにする
 function submitInput(){
   const q = questions[idx];
   const inp = $('qInput'), btn = $('qSubmit'), fb = $('qFb');
   if(!inp || inp.disabled) return;
   const norm = toHira(inp.value);
-  const isOk = (norm !== '' && norm === toHira(q.answer));
-  answers.push({ question_id: q.question_id, answer: norm });   // 正規化値を送る＝サーバー採点と一致
+  const correctFull = toHira(q.answer);
+  const okuri = okuriganaOf(q.prompt);
+  const correctNoOkuri = (okuri && correctFull.endsWith(okuri)) ? correctFull.slice(0, -okuri.length) : '';
+  const isOk = norm !== '' && (norm === correctFull || (correctNoOkuri !== '' && norm === correctNoOkuri));
+  // 送り仮名を省略していても、サーバーには正式な表記を送って加点判定を一致させる
+  answers.push({ question_id: q.question_id, answer: isOk ? correctFull : norm });
   inp.disabled = true; btn.disabled = true;
   fb.classList.remove('ok','ng');
   if(isOk){
