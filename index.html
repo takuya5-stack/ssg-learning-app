@@ -28,7 +28,8 @@
     box-shadow:0 0 60px rgba(180,140,60,.10);}
   .topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
     background:var(--paper); border-bottom:1px solid var(--line);}
-  .topbar .logo{font-size:17px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:6px; letter-spacing:.3px;}
+  .topbar .logo{font-size:17px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:6px; letter-spacing:.3px; cursor:pointer;}
+  .topbar .logo:active{opacity:.7;}
   .topbar .logo .arw{color:var(--orange); font-weight:900;}
   .topbar .streak{font-size:13px; font-weight:800; color:var(--orange-deep);
     background:var(--orange-tint); padding:5px 12px; border-radius:999px;}
@@ -201,7 +202,7 @@
 <body>
 <div id="app">
   <div class="topbar">
-    <span class="logo"><span class="arw">↗</span> SSG学習</span>
+    <span class="logo" id="logoHome"><span class="arw">↗</span> SSG学習</span>
     <span class="streak" id="topStreak"></span>
   </div>
 
@@ -493,6 +494,17 @@ $('btnQuizBack').addEventListener('click', ()=>{
     questions = []; idx = 0; answers = [];
     show('menu'); renderMenu();
   }
+});
+
+// ロゴタップでホーム（メニュー）へ。クイズ中は中断確認、ログイン前は何もしない
+$('logoHome').addEventListener('click', ()=>{
+  if(!profile) return;
+  const active = document.querySelector('.screen.active');
+  if(active && active.id === 's-quiz'){
+    if(!confirm('途中でやめると、今日のポイントは入りません。もどりますか？')) return;
+    questions = []; idx = 0; answers = [];
+  }
+  show('menu'); renderMenu();
 });
 
 // ---------- 音声（英単語の発音） ----------
