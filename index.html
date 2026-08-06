@@ -1037,7 +1037,7 @@ async function renderRanking(){
   wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">読み込み中…</p>';
   const { data, error } = await sb.rpc('get_weekly_ranking');
   if(error || !data){ wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">読み込みに失敗しました。</p>'; return; }
-  if(data.length === 0){ wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">まだデータがありません。</p>'; return; }
+  if(data.length === 0){ wrap.innerHTML = '<p class="muted" style="padding:10px 2px;">今週はまだ誰もポイントを貯めていないよ。いちばん乗りしよう！</p>'; return; }
   const medal = { 1:'🥇', 2:'🥈', 3:'🥉' };
   wrap.innerHTML = '';
   data.forEach(row=>{
@@ -1050,6 +1050,14 @@ async function renderRanking(){
       '<div class="rp">+'+row.weekly_xp+'pt</div>';
     wrap.appendChild(div);
   });
+  // 今週0ptの生徒は一覧に載らないので、自分が居ない理由を伝える
+  if(!data.some(r=>r.is_me)){
+    const p = document.createElement('p');
+    p.className = 'muted';
+    p.style.cssText = 'padding:12px 2px; font-weight:600;';
+    p.textContent = '今週はまだポイントがないよ。クイズを1セットやるとランキングに参加できる！';
+    wrap.appendChild(p);
+  }
 }
 
 // ---------- マイページ ----------

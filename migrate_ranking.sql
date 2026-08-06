@@ -29,6 +29,7 @@ begin
     left join point_ledger pl on pl.student_id = s.id
     where not exists (select 1 from admins a where a.id = s.id)   -- 管理者兼テスト用アカウントは除外
     group by s.id, s.display_name, s.grade
+    having coalesce(sum(pl.xp) filter (where pl.created_at >= v_week_start), 0) > 0  -- 今週0ptの生徒は載せない
     order by weekly_xp desc, s.display_name asc
   loop
     v_rank := v_rank + 1;
