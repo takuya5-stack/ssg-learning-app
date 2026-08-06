@@ -285,7 +285,7 @@
       <div class="bar"><div id="rLvBar" style="width:0%"></div></div>
     </div>
     <button class="btn" id="btnRetry">もう一度</button>
-    <button class="ghost" id="btnToMenu" style="width:100%; margin-top:10px;">メニューへ戻る</button>
+    <button class="ghost" id="btnToMenu" style="width:100%; margin-top:10px;">一覧へもどる</button>
   </div>
 
   <!-- 教科メニュー -->
@@ -717,7 +717,7 @@ function renderResult(r){
   $('rLvText').textContent = into+' / 50';
   $('rLvBar').style.width = (into/50*100)+'%';
 }
-$('btnToMenu').addEventListener('click', ()=>{ show('menu'); renderMenu(); });
+$('btnToMenu').addEventListener('click', ()=> quizReturnTo());
 // 同じ分野/Unitをもう一度（地理なら地理、Unit1ならUnit1）
 $('btnRetry').addEventListener('click', ()=> startQuiz(currentSubject, currentUnit, currentGrade));
 
@@ -765,7 +765,7 @@ function renderMenu(){
         if(s.gradeFirst){ showGradeList(s); }// 学年→Unit の階層（英語）
         else if(s.cats){ showCategories(s); }// 大分類（国語の 漢字/古文）
         else if(s.topics){ showTopics(s); }  // 分野があるなら分野選択へ
-        else { startQuiz(s.slug); }          // なければ即出題
+        else { quizReturnTo = ()=>{ show('menu'); renderMenu(); }; startQuiz(s.slug); }  // なければ即出題
       });
     }
     grid.appendChild(d);
@@ -774,6 +774,7 @@ function renderMenu(){
 }
 
 let topicsBack = ()=>{ show('menu'); renderMenu(); };  // 分野/学年画面の「もどる」先
+let quizReturnTo = ()=>{ show('menu'); renderMenu(); }; // クイズ終了後「メニューへ戻る」の戻り先（直前の単元一覧に戻す。無ければホーム）
 
 // 分野選択（英語の 単語/文法… 社会の 歴史/地理/公民 など）
 function showTopics(s){
@@ -785,7 +786,7 @@ function showTopics(s){
     b.innerHTML = '<span>'+t+'</span><i class="ti ti-chevron-right"></i>';
     b.addEventListener('click', ()=>{
       if(s.grades){ showGrades(s, t); }          // 学年の階層があるなら学年選択へ
-      else { startQuiz(s.slug, t); }              // なければ即出題
+      else { quizReturnTo = ()=> showTopics(s); startQuiz(s.slug, t); }  // なければ即出題
     });
     wrap.appendChild(b);
   });
@@ -829,7 +830,7 @@ async function showCatTopics(s, cat){
     b.className = 'topicbtn';
     b.innerHTML = '<span>'+t+'</span><span class="rt"><span class="prog">…</span>'
       + '<i class="ti ti-chevron-right"></i></span>';
-    b.addEventListener('click', ()=> startQuiz(s.slug, t, grade));
+    b.addEventListener('click', ()=>{ quizReturnTo = ()=> showCatTopics(s, cat); startQuiz(s.slug, t, grade); });
     badge[t] = b.querySelector('.prog');
     wrap.appendChild(b);
   });
@@ -889,7 +890,7 @@ async function showKanjiUnits(s, cat, grade){
     b.className = 'topicbtn';
     b.innerHTML = '<span>'+t+'</span><span class="rt"><span class="prog">…</span>'
       + '<i class="ti ti-chevron-right"></i></span>';
-    b.addEventListener('click', ()=> startQuiz(s.slug, t, grade));
+    b.addEventListener('click', ()=>{ quizReturnTo = ()=> showKanjiUnits(s, cat, grade); startQuiz(s.slug, t, grade); });
     badge[t] = b.querySelector('.prog');
     wrap.appendChild(b);
   });
@@ -993,7 +994,7 @@ async function showUnits(s, grade, opts){
     b.className = 'topicbtn';
     b.innerHTML = '<span>'+u+'</span><span class="rt"><span class="prog">…</span>'
       + '<i class="ti ti-chevron-right"></i></span>';
-    b.addEventListener('click', ()=> startQuiz(s.slug, u, grade));
+    b.addEventListener('click', ()=>{ quizReturnTo = ()=> showUnits(s, grade, opts); startQuiz(s.slug, u, grade); });
     badge[u] = b.querySelector('.prog');
     wrap.appendChild(b);
   });
