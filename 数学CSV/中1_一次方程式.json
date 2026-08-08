@@ -1,0 +1,182 @@
+[
+  {
+    "prompt": "3x-5=7 の解 x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "(-5)を移項して 3x=12、両辺を3でわって x=4"
+  },
+  {
+    "prompt": "2x+9=3 の解 x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "9を移項して 2x=-6、両辺を2でわって x=-3"
+  },
+  {
+    "prompt": "5x+3=13 の解 x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "3を移項して 5x=10、両辺を5でわって x=2"
+  },
+  {
+    "prompt": "4x-7=-11 の解 x は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "(-7)を移項して 4x=-4、両辺を4でわって x=-1"
+  },
+  {
+    "prompt": "6x+2=20 の解 x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "2を移項して 6x=18、両辺を6でわって x=3"
+  },
+  {
+    "prompt": "7x-14=-14 の解 x は？",
+    "answer": "0",
+    "choices": null,
+    "explanation": "(-14)を移項して 7x=0、両辺を7でわって x=0"
+  },
+  {
+    "prompt": "2x-11=1 の解 x は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "(-11)を移項して 2x=12、両辺を2でわって x=6"
+  },
+  {
+    "prompt": "3x+12=-3 の解 x は？",
+    "answer": "-5",
+    "choices": null,
+    "explanation": "12を移項して 3x=-15、両辺を3でわって x=-5"
+  },
+  {
+    "prompt": "8x+5=-11 の解 x は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "5を移項して 8x=-16、両辺を8でわって x=-2"
+  },
+  {
+    "prompt": "5x-1=14 の解 x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "(-1)を移項して 5x=15、両辺を5でわって x=3"
+  },
+  {
+    "prompt": "4x=-20 の解 x は？",
+    "answer": "-5",
+    "choices": null,
+    "explanation": "両辺を4でわって x=-5"
+  },
+  {
+    "prompt": "7x=21 の解 x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "両辺を7でわって x=3"
+  },
+  {
+    "prompt": "-3x=-18 の解 x は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "両辺を-3でわって x=6"
+  },
+  {
+    "prompt": "9x=-18 の解 x は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "両辺を9でわって x=-2"
+  },
+  {
+    "prompt": "-6x=-24 の解 x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "両辺を-6でわって x=4"
+  },
+  {
+    "prompt": "12x=-36 の解 x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "両辺を12でわって x=-3"
+  },
+  {
+    "prompt": "4x-3=x+9 の解 x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 3x=12 → x=4"
+  },
+  {
+    "prompt": "5x+2=3x-6 の解 x は？",
+    "answer": "-4",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 2x=-8 → x=-4"
+  },
+  {
+    "prompt": "2x+7=-x+1 の解 x は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 3x=-6 → x=-2"
+  },
+  {
+    "prompt": "6x-5=2x+7 の解 x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 4x=12 → x=3"
+  },
+  {
+    "prompt": "3x+8=-2x+3 の解 x は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 5x=-5 → x=-1"
+  },
+  {
+    "prompt": "7x+1=4x+7 の解 x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 3x=6 → x=2"
+  },
+  {
+    "prompt": "-2x+9=3x+4 の解 x は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて -5x=-5 → x=1"
+  },
+  {
+    "prompt": "5x-6=-x-24 の解 x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "xを左辺、数を右辺に集めて 6x=-18 → x=-3"
+  },
+  {
+    "prompt": "2(x+3)=10 の解 x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "カッコを外して 2x+6=10 → x=2"
+  },
+  {
+    "prompt": "3(x-1)=9 の解 x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "カッコを外して 3x-3=9 → x=4"
+  },
+  {
+    "prompt": "5(x+2)=-5 の解 x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "カッコを外して 5x+10=-5 → x=-3"
+  },
+  {
+    "prompt": "4(x-5)=-16 の解 x は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "カッコを外して 4x-20=-16 → x=1"
+  },
+  {
+    "prompt": "-2(x+4)=4 の解 x は？",
+    "answer": "-6",
+    "choices": null,
+    "explanation": "カッコを外して -2x-8=4 → x=-6"
+  },
+  {
+    "prompt": "6(x+1)=-18 の解 x は？",
+    "answer": "-4",
+    "choices": null,
+    "explanation": "カッコを外して 6x+6=-18 → x=-4"
+  }
+]

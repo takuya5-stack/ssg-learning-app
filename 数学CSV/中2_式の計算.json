@@ -1,0 +1,332 @@
+[
+  {
+    "prompt": "(3x+2y)+(x-5y) を計算すると？",
+    "answer": "4x-3y",
+    "choices": [
+      "4x-3y",
+      "4x+7y",
+      "2x-3y",
+      "5x-3y"
+    ],
+    "explanation": "xどうし 3+1=4、yどうし 2-5=-3 → 4x-3y"
+  },
+  {
+    "prompt": "(4x-y)+(2x+3y) を計算すると？",
+    "answer": "6x+2y",
+    "choices": [
+      "6x+2y",
+      "6x-4y",
+      "2x+2y",
+      "7x+2y"
+    ],
+    "explanation": "xどうし 4+2=6、yどうし -1+3=2 → 6x+2y"
+  },
+  {
+    "prompt": "(5x+3y)+(-2x+y) を計算すると？",
+    "answer": "3x+4y",
+    "choices": [
+      "3x+4y",
+      "3x+2y",
+      "7x+4y",
+      "4x+4y"
+    ],
+    "explanation": "xどうし 5-2=3、yどうし 3+1=4 → 3x+4y"
+  },
+  {
+    "prompt": "(-x+6y)+(4x-2y) を計算すると？",
+    "answer": "3x+4y",
+    "choices": [
+      "3x+4y",
+      "3x+8y",
+      "-5x+4y",
+      "4x+4y"
+    ],
+    "explanation": "xどうし -1+4=3、yどうし 6-2=4 → 3x+4y"
+  },
+  {
+    "prompt": "(2x-7y)+(3x+4y) を計算すると？",
+    "answer": "5x-3y",
+    "choices": [
+      "5x-3y",
+      "5x-11y",
+      "-x-3y",
+      "6x-3y"
+    ],
+    "explanation": "xどうし 2+3=5、yどうし -7+4=-3 → 5x-3y"
+  },
+  {
+    "prompt": "(6x+y)+(-3x-2y) を計算すると？",
+    "answer": "3x-y",
+    "choices": [
+      "3x-y",
+      "3x+3y",
+      "9x-y",
+      "4x-y"
+    ],
+    "explanation": "xどうし 6-3=3、yどうし 1-2=-1 → 3x-y"
+  },
+  {
+    "prompt": "(5a-3b)-(2a-b) を計算すると？",
+    "answer": "3a-2b",
+    "choices": [
+      "3a-2b",
+      "3a-4b",
+      "7a-2b",
+      "3a+2b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 5a-3b-2a+1b = 3a-2b"
+  },
+  {
+    "prompt": "(4a+6b)-(a+3b) を計算すると？",
+    "answer": "3a+3b",
+    "choices": [
+      "3a+3b",
+      "3a+9b",
+      "5a+3b",
+      "3a-3b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 4a+6b-1a-3b = 3a+3b"
+  },
+  {
+    "prompt": "(7a-2b)-(3a-5b) を計算すると？",
+    "answer": "4a+3b",
+    "choices": [
+      "4a+3b",
+      "4a-7b",
+      "10a+3b",
+      "4a-3b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 7a-2b-3a+5b = 4a+3b"
+  },
+  {
+    "prompt": "(2a+5b)-(-a+2b) を計算すると？",
+    "answer": "3a+3b",
+    "choices": [
+      "3a+3b",
+      "3a+7b",
+      "a+3b",
+      "3a-3b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 2a+5b+1a-2b = 3a+3b"
+  },
+  {
+    "prompt": "(6a-4b)-(-2a-3b) を計算すると？",
+    "answer": "8a-b",
+    "choices": [
+      "8a-b",
+      "8a-7b",
+      "4a-b",
+      "8a+b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 6a-4b+2a+3b = 8a-b"
+  },
+  {
+    "prompt": "(3a+7b)-(5a+4b) を計算すると？",
+    "answer": "-2a+3b",
+    "choices": [
+      "-2a+3b",
+      "-2a+11b",
+      "8a+3b",
+      "-2a-3b"
+    ],
+    "explanation": "ひく式の符号を全部変えてたす → 3a+7b-5a-4b = -2a+3b"
+  },
+  {
+    "prompt": "2x×5x を計算すると？",
+    "answer": "10x²",
+    "choices": [
+      "10x²",
+      "10x",
+      "7x²",
+      "-10x²"
+    ],
+    "explanation": "数どうし 2×5=10、x×x=x² → 10x²"
+  },
+  {
+    "prompt": "3x×(-4x) を計算すると？",
+    "answer": "-12x²",
+    "choices": [
+      "-12x²",
+      "-12x",
+      "-x²",
+      "12x²"
+    ],
+    "explanation": "数どうし 3×(-4)=-12、x×x=x² → -12x²"
+  },
+  {
+    "prompt": "(-6x)×2x を計算すると？",
+    "answer": "-12x²",
+    "choices": [
+      "-12x²",
+      "-12x",
+      "-4x²",
+      "12x²"
+    ],
+    "explanation": "数どうし -6×2=-12、x×x=x² → -12x²"
+  },
+  {
+    "prompt": "7x×3x を計算すると？",
+    "answer": "21x²",
+    "choices": [
+      "21x²",
+      "21x",
+      "10x²",
+      "-21x²"
+    ],
+    "explanation": "数どうし 7×3=21、x×x=x² → 21x²"
+  },
+  {
+    "prompt": "(-2x)×(-8x) を計算すると？",
+    "answer": "16x²",
+    "choices": [
+      "16x²",
+      "16x",
+      "-10x²",
+      "-16x²"
+    ],
+    "explanation": "数どうし -2×(-8)=16、x×x=x² → 16x²"
+  },
+  {
+    "prompt": "4x×(-3x) を計算すると？",
+    "answer": "-12x²",
+    "choices": [
+      "-12x²",
+      "-12x",
+      "x²",
+      "12x²"
+    ],
+    "explanation": "数どうし 4×(-3)=-12、x×x=x² → -12x²"
+  },
+  {
+    "prompt": "12ab÷3a を計算すると？",
+    "answer": "4b",
+    "choices": [
+      "4b",
+      "4ab",
+      "4a",
+      "-4b"
+    ],
+    "explanation": "12÷3=4、a は約分で消えて b が残る → 4b"
+  },
+  {
+    "prompt": "(-15ab)÷5a を計算すると？",
+    "answer": "-3b",
+    "choices": [
+      "-3b",
+      "-3ab",
+      "-3a",
+      "3b"
+    ],
+    "explanation": "-15÷5=-3、a は約分で消えて b が残る → -3b"
+  },
+  {
+    "prompt": "24ab÷(-6a) を計算すると？",
+    "answer": "-4b",
+    "choices": [
+      "-4b",
+      "-4ab",
+      "-4a",
+      "4b"
+    ],
+    "explanation": "24÷(-6)=-4、a は約分で消えて b が残る → -4b"
+  },
+  {
+    "prompt": "(-36ab)÷(-4a) を計算すると？",
+    "answer": "9b",
+    "choices": [
+      "9b",
+      "9ab",
+      "9a",
+      "-9b"
+    ],
+    "explanation": "-36÷(-4)=9、a は約分で消えて b が残る → 9b"
+  },
+  {
+    "prompt": "20ab÷4a を計算すると？",
+    "answer": "5b",
+    "choices": [
+      "5b",
+      "5ab",
+      "5a",
+      "-5b"
+    ],
+    "explanation": "20÷4=5、a は約分で消えて b が残る → 5b"
+  },
+  {
+    "prompt": "(-42ab)÷7a を計算すると？",
+    "answer": "-6b",
+    "choices": [
+      "-6b",
+      "-6ab",
+      "-6a",
+      "6b"
+    ],
+    "explanation": "-42÷7=-6、a は約分で消えて b が残る → -6b"
+  },
+  {
+    "prompt": "2(3x-y)+3(x+2y) を計算すると？",
+    "answer": "9x+4y",
+    "choices": [
+      "9x+4y",
+      "9x",
+      "7x+4y",
+      "9x-4y"
+    ],
+    "explanation": "それぞれ展開して 6x-2y と 3x+6y → まとめて 9x+4y"
+  },
+  {
+    "prompt": "4(x+2y)+2(-3x+y) を計算すると？",
+    "answer": "-2x+10y",
+    "choices": [
+      "-2x+10y",
+      "-2x+9y",
+      "x+10y",
+      "-2x-10y"
+    ],
+    "explanation": "それぞれ展開して 4x+8y と -6x+2y → まとめて -2x+10y"
+  },
+  {
+    "prompt": "3(2x+y)-2(x+4y) を計算すると？",
+    "answer": "4x-5y",
+    "choices": [
+      "4x-5y",
+      "4x+7y",
+      "7x-5y",
+      "4x+5y"
+    ],
+    "explanation": "それぞれ展開して 6x+3y と -2x-8y → まとめて 4x-5y"
+  },
+  {
+    "prompt": "5(x-2y)+2(3x+y) を計算すると？",
+    "answer": "11x-8y",
+    "choices": [
+      "11x-8y",
+      "11x-9y",
+      "8x-8y",
+      "11x+8y"
+    ],
+    "explanation": "それぞれ展開して 5x-10y と 6x+2y → まとめて 11x-8y"
+  },
+  {
+    "prompt": "2(-x+3y)+4(2x-y) を計算すると？",
+    "answer": "6x+2y",
+    "choices": [
+      "6x+2y",
+      "6x+5y",
+      "2y",
+      "6x-2y"
+    ],
+    "explanation": "それぞれ展開して -2x+6y と 8x-4y → まとめて 6x+2y"
+  },
+  {
+    "prompt": "3(4x-2y)-(2x+5y) を計算すると？",
+    "answer": "10x-11y",
+    "choices": [
+      "10x-11y",
+      "10x-y",
+      "14x-11y",
+      "10x+11y"
+    ],
+    "explanation": "それぞれ展開して 12x-6y と -2x-5y → まとめて 10x-11y"
+  }
+]

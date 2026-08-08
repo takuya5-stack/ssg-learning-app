@@ -1,0 +1,317 @@
+[
+  {
+    "prompt": "三角形の内角の和は何度？",
+    "answer": "180",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=3 なので 180×1 = 180度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "四角形の内角の和は何度？",
+    "answer": "360",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=4 なので 180×2 = 360度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "五角形の内角の和は何度？",
+    "answer": "540",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=5 なので 180×3 = 540度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "六角形の内角の和は何度？",
+    "answer": "720",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=6 なので 180×4 = 720度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "七角形の内角の和は何度？",
+    "answer": "900",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=7 なので 180×5 = 900度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "八角形の内角の和は何度？",
+    "answer": "1080",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=8 なので 180×6 = 1080度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "九角形の内角の和は何度？",
+    "answer": "1260",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=9 なので 180×7 = 1260度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十角形の内角の和は何度？",
+    "answer": "1440",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=10 なので 180×8 = 1440度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十一角形の内角の和は何度？",
+    "answer": "1620",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=11 なので 180×9 = 1620度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十二角形の内角の和は何度？",
+    "answer": "1800",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=12 なので 180×10 = 1800度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十三角形の内角の和は何度？",
+    "answer": "1980",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=13 なので 180×11 = 1980度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十四角形の内角の和は何度？",
+    "answer": "2160",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=14 なので 180×12 = 2160度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十五角形の内角の和は何度？",
+    "answer": "2340",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=15 なので 180×13 = 2340度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十六角形の内角の和は何度？",
+    "answer": "2520",
+    "choices": null,
+    "explanation": "n角形の内角の和 = 180×(n-2)。n=16 なので 180×14 = 2520度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正五角形の1つの外角は何度？",
+    "answer": "72",
+    "choices": null,
+    "explanation": "外角の和は360度。正五角形なので 360÷5 = 72度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正六角形の1つの外角は何度？",
+    "answer": "60",
+    "choices": null,
+    "explanation": "外角の和は360度。正六角形なので 360÷6 = 60度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正八角形の1つの外角は何度？",
+    "answer": "45",
+    "choices": null,
+    "explanation": "外角の和は360度。正八角形なので 360÷8 = 45度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正九角形の1つの外角は何度？",
+    "answer": "40",
+    "choices": null,
+    "explanation": "外角の和は360度。正九角形なので 360÷9 = 40度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十角形の1つの外角は何度？",
+    "answer": "36",
+    "choices": null,
+    "explanation": "外角の和は360度。正十角形なので 360÷10 = 36度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十二角形の1つの外角は何度？",
+    "answer": "30",
+    "choices": null,
+    "explanation": "外角の和は360度。正十二角形なので 360÷12 = 30度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十五角形の1つの外角は何度？",
+    "answer": "24",
+    "choices": null,
+    "explanation": "外角の和は360度。正十五角形なので 360÷15 = 24度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十八角形の1つの外角は何度？",
+    "answer": "20",
+    "choices": null,
+    "explanation": "外角の和は360度。正十八角形なので 360÷18 = 20度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正二十角形の1つの外角は何度？",
+    "answer": "18",
+    "choices": null,
+    "explanation": "外角の和は360度。正二十角形なので 360÷20 = 18度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正五角形の1つの内角は何度？",
+    "answer": "108",
+    "choices": null,
+    "explanation": "1つの外角が 360÷5=72度。内角 = 180-72 = 108度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正六角形の1つの内角は何度？",
+    "answer": "120",
+    "choices": null,
+    "explanation": "1つの外角が 360÷6=60度。内角 = 180-60 = 120度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正八角形の1つの内角は何度？",
+    "answer": "135",
+    "choices": null,
+    "explanation": "1つの外角が 360÷8=45度。内角 = 180-45 = 135度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正九角形の1つの内角は何度？",
+    "answer": "140",
+    "choices": null,
+    "explanation": "1つの外角が 360÷9=40度。内角 = 180-40 = 140度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十角形の1つの内角は何度？",
+    "answer": "144",
+    "choices": null,
+    "explanation": "1つの外角が 360÷10=36度。内角 = 180-36 = 144度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十二角形の1つの内角は何度？",
+    "answer": "150",
+    "choices": null,
+    "explanation": "1つの外角が 360÷12=30度。内角 = 180-30 = 150度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十五角形の1つの内角は何度？",
+    "answer": "156",
+    "choices": null,
+    "explanation": "1つの外角が 360÷15=24度。内角 = 180-24 = 156度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正十八角形の1つの内角は何度？",
+    "answer": "160",
+    "choices": null,
+    "explanation": "1つの外角が 360÷18=20度。内角 = 180-20 = 160度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "正二十角形の1つの内角は何度？",
+    "answer": "162",
+    "choices": null,
+    "explanation": "1つの外角が 360÷20=18度。内角 = 180-18 = 162度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "五角形の外角の和は何度？",
+    "answer": "360",
+    "choices": null,
+    "explanation": "多角形の外角の和は、何角形でもいつも360度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "七角形の外角の和は何度？",
+    "answer": "360",
+    "choices": null,
+    "explanation": "多角形の外角の和は、何角形でもいつも360度",
+    "check": {
+      "mode": "ngon"
+    }
+  },
+  {
+    "prompt": "十一角形の外角の和は何度？",
+    "answer": "360",
+    "choices": null,
+    "explanation": "多角形の外角の和は、何角形でもいつも360度",
+    "check": {
+      "mode": "ngon"
+    }
+  }
+]

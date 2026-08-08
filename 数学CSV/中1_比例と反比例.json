@@ -1,0 +1,284 @@
+[
+  {
+    "prompt": "y=3x で x=4 のときの y の値は？",
+    "answer": "12",
+    "choices": null,
+    "explanation": "x に 4 を入れて 3×4 = 12",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-2x で x=5 のときの y の値は？",
+    "answer": "-10",
+    "choices": null,
+    "explanation": "x に 5 を入れて -2×5 = -10",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=6x で x=-3 のときの y の値は？",
+    "answer": "-18",
+    "choices": null,
+    "explanation": "x に -3 を入れて 6×(-3) = -18",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=5x で x=2 のときの y の値は？",
+    "answer": "10",
+    "choices": null,
+    "explanation": "x に 2 を入れて 5×2 = 10",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-4x で x=-3 のときの y の値は？",
+    "answer": "12",
+    "choices": null,
+    "explanation": "x に -3 を入れて -4×(-3) = 12",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=7x で x=3 のときの y の値は？",
+    "answer": "21",
+    "choices": null,
+    "explanation": "x に 3 を入れて 7×3 = 21",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-x で x=8 のときの y の値は？",
+    "answer": "-8",
+    "choices": null,
+    "explanation": "x に 8 を入れて -1×8 = -8",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=2x で x=-9 のときの y の値は？",
+    "answer": "-18",
+    "choices": null,
+    "explanation": "x に -9 を入れて 2×(-9) = -18",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=8x で x=2 のときの y の値は？",
+    "answer": "16",
+    "choices": null,
+    "explanation": "x に 2 を入れて 8×2 = 16",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-5x で x=4 のときの y の値は？",
+    "answer": "-20",
+    "choices": null,
+    "explanation": "x に 4 を入れて -5×4 = -20",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=12/x で x=3 のときの y の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "x に 3 を入れて 12÷3 = 4",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=24/x で x=-4 のときの y の値は？",
+    "answer": "-6",
+    "choices": null,
+    "explanation": "x に -4 を入れて 24÷(-4) = -6",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-18/x で x=6 のときの y の値は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "x に 6 を入れて -18÷6 = -3",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=36/x で x=9 のときの y の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "x に 9 を入れて 36÷9 = 4",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-30/x で x=-5 のときの y の値は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "x に -5 を入れて -30÷(-5) = 6",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=48/x で x=8 のときの y の値は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "x に 8 を入れて 48÷8 = 6",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=-42/x で x=7 のときの y の値は？",
+    "answer": "-6",
+    "choices": null,
+    "explanation": "x に 7 を入れて -42÷7 = -6",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y=60/x で x=-10 のときの y の値は？",
+    "answer": "-6",
+    "choices": null,
+    "explanation": "x に -10 を入れて 60÷(-10) = -6",
+    "check": {
+      "mode": "fn"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=2 のとき y=6 である。比例定数は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = 6÷2 = 3",
+    "check": {
+      "mode": "calc",
+      "expr": "6/2"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=3 のとき y=-12 である。比例定数は？",
+    "answer": "-4",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = -12÷3 = -4",
+    "check": {
+      "mode": "calc",
+      "expr": "-12/3"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=4 のとき y=20 である。比例定数は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = 20÷4 = 5",
+    "check": {
+      "mode": "calc",
+      "expr": "20/4"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=5 のとき y=-15 である。比例定数は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = -15÷5 = -3",
+    "check": {
+      "mode": "calc",
+      "expr": "-15/5"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=6 のとき y=18 である。比例定数は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = 18÷6 = 3",
+    "check": {
+      "mode": "calc",
+      "expr": "18/6"
+    }
+  },
+  {
+    "prompt": "y は x に比例し、x=8 のとき y=-24 である。比例定数は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "比例は y=ax。a = y÷x = -24÷8 = -3",
+    "check": {
+      "mode": "calc",
+      "expr": "-24/8"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=3 のとき y=4 である。比例定数は？",
+    "answer": "12",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = 3×4 = 12",
+    "check": {
+      "mode": "calc",
+      "expr": "(3)*(4)"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=2 のとき y=-9 である。比例定数は？",
+    "answer": "-18",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = 2×(-9) = -18",
+    "check": {
+      "mode": "calc",
+      "expr": "(2)*(-9)"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=6 のとき y=5 である。比例定数は？",
+    "answer": "30",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = 6×5 = 30",
+    "check": {
+      "mode": "calc",
+      "expr": "(6)*(5)"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=-4 のとき y=7 である。比例定数は？",
+    "answer": "-28",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = (-4)×7 = -28",
+    "check": {
+      "mode": "calc",
+      "expr": "(-4)*(7)"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=8 のとき y=3 である。比例定数は？",
+    "answer": "24",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = 8×3 = 24",
+    "check": {
+      "mode": "calc",
+      "expr": "(8)*(3)"
+    }
+  },
+  {
+    "prompt": "y は x に反比例し、x=-5 のとき y=-6 である。比例定数は？",
+    "answer": "30",
+    "choices": null,
+    "explanation": "反比例は y=a/x。a = x×y = (-5)×(-6) = 30",
+    "check": {
+      "mode": "calc",
+      "expr": "(-5)*(-6)"
+    }
+  }
+]

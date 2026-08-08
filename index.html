@@ -576,8 +576,8 @@ function playWord(){
 }
 $('qSpk').addEventListener('click', playWord);
 
-// 数学で「入力式」にする単元（答えが必ず整数になるもの）。ほかの単元は4択のまま
-const MATH_INPUT_UNITS = ['二次方程式'];
+// 数学で「入力式」にする単元（答えが必ず整数になるもの）。ここに無い単元は4択のまま
+const MATH_INPUT_UNITS = ['正負の数','一次方程式','比例と反比例','連立方程式','一次関数','角の計算','二次方程式'];
 const isMathInput = ()=> currentSubject==='math' && MATH_INPUT_UNITS.includes(currentUnit);
 
 function renderQuestion(){
@@ -653,7 +653,8 @@ function toMath(s){
     .replace(/[Ａ-Ｚａ-ｚ０-９＝＋－]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
     .replace(/[−–—ー―‐‑ｰ]/g, '-')   // マイナスに見える記号（長音記号・ダッシュ類）はすべて - に
     .replace(/\s+/g, '')
-    .replace(/^x=/i, '')
+    .replace(/^[xy]=/i, '')          // 「x=3」「y=-2」と書いても正解にする
+    .replace(/[度°]$/, '')           // 角度の問題で「180度」と書いても正解にする
     .replace(/^\+/, '');
 }
 
@@ -795,12 +796,12 @@ const SUBJECTS = [
    korekore:{
      '中1':['Part1','Part2','Part3','Part4','Part5','Part6','Part7','Part8']
    }},
-  // 数学は英語と同じ 学年→単元 の2階層。中3の計算4単元から開通（中1中2は準備中）
+  // 数学は英語と同じ 学年→単元 の2階層。中1中2中3すべて「計算」を投入済み
   {slug:'math', nm:'数学', icon:'ti-math', on:true, c:'#39B2F5', ct:'#DDF0FE',
    gradeFirst:true, grades:true, unitNoun:'単元',
    units:{
-     '中1':[],
-     '中2':[],
+     '中1':['正負の数','文字式','一次方程式','比例と反比例'],
+     '中2':['式の計算','連立方程式','一次関数','角の計算'],
      '中3':['式の展開','因数分解','平方根','二次方程式']
    }},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:true, c:'#FF6FA5', ct:'#FFE3EF',

@@ -1,0 +1,418 @@
+[
+  {
+    "prompt": "2x+y=7 と x-y=2 の解のうち x の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=3, y=1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 3,
+        "y": 1
+      }
+    }
+  },
+  {
+    "prompt": "x+y=6 と 2x-y=6 の解のうち y の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=4, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 4,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "3x+2y=4 と x+y=1 の解のうち x の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=2, y=-1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 2,
+        "y": -1
+      }
+    }
+  },
+  {
+    "prompt": "x-2y=-1 と 2x+y=13 の解のうち y の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=5, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 5,
+        "y": 3
+      }
+    }
+  },
+  {
+    "prompt": "2x+3y=8 と x-y=-6 の解のうち x の値は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "解は x=-2, y=4",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -2,
+        "y": 4
+      }
+    }
+  },
+  {
+    "prompt": "4x+y=10 と x+2y=-1 の解のうち y の値は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "解は x=3, y=-2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 3,
+        "y": -2
+      }
+    }
+  },
+  {
+    "prompt": "x+y=7 と 3x-2y=16 の解のうち x の値は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "解は x=6, y=1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 6,
+        "y": 1
+      }
+    }
+  },
+  {
+    "prompt": "2x-y=-3 と 3x+y=8 の解のうち y の値は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "解は x=1, y=5",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 1,
+        "y": 5
+      }
+    }
+  },
+  {
+    "prompt": "5x+2y=-1 と x-3y=-7 の解のうち x の値は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "解は x=-1, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -1,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "x+3y=-2 と 2x+y=11 の解のうち y の値は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "解は x=7, y=-3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 7,
+        "y": -3
+      }
+    }
+  },
+  {
+    "prompt": "3x-y=11 と 2x+3y=11 の解のうち x の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "解は x=4, y=1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 4,
+        "y": 1
+      }
+    }
+  },
+  {
+    "prompt": "2x+5y=-11 と x-2y=-1 の解のうち y の値は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "解は x=-3, y=-1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -3,
+        "y": -1
+      }
+    }
+  },
+  {
+    "prompt": "x-y=6 と 4x+y=34 の解のうち x の値は？",
+    "answer": "8",
+    "choices": null,
+    "explanation": "解は x=8, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 8,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "3x+y=-9 と x-2y=-10 の解のうち y の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=-4, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -4,
+        "y": 3
+      }
+    }
+  },
+  {
+    "prompt": "2x+2y=-6 と 3x-y=7 の解のうち x の値は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "解は x=1, y=-4",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 1,
+        "y": -4
+      }
+    }
+  },
+  {
+    "prompt": "x+4y=14 と 3x+y=9 の解のうち y の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=2, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 2,
+        "y": 3
+      }
+    }
+  },
+  {
+    "prompt": "x+2y=10 と 3x-y=2 の解のうち y の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "解は x=2, y=4",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 2,
+        "y": 4
+      }
+    }
+  },
+  {
+    "prompt": "2x-3y=13 と x+y=4 の解のうち x の値は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "解は x=5, y=-1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 5,
+        "y": -1
+      }
+    }
+  },
+  {
+    "prompt": "4x+3y=10 と 2x-y=0 の解のうち y の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=1, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 1,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "x+y=1 と 5x+2y=11 の解のうち x の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=3, y=-2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 3,
+        "y": -2
+      }
+    }
+  },
+  {
+    "prompt": "3x+4y=9 と x-y=-4 の解のうち y の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=-1, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -1,
+        "y": 3
+      }
+    }
+  },
+  {
+    "prompt": "2x+y=10 と 4x+3y=18 の解のうち x の値は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "解は x=6, y=-2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 6,
+        "y": -2
+      }
+    }
+  },
+  {
+    "prompt": "x-3y=4 と 2x+5y=19 の解のうち y の値は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "解は x=7, y=1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 7,
+        "y": 1
+      }
+    }
+  },
+  {
+    "prompt": "5x+y=13 と 2x-2y=-2 の解のうち x の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=2, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 2,
+        "y": 3
+      }
+    }
+  },
+  {
+    "prompt": "3x+2y=4 と 4x+y=-3 の解のうち y の値は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "解は x=-2, y=5",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -2,
+        "y": 5
+      }
+    }
+  },
+  {
+    "prompt": "x+5y=-1 と 2x-3y=11 の解のうち x の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "解は x=4, y=-1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 4,
+        "y": -1
+      }
+    }
+  },
+  {
+    "prompt": "2x+4y=14 と x-y=1 の解のうち y の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=3, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 3,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "6x+y=2 と x+3y=-11 の解のうち x の値は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "解は x=1, y=-4",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 1,
+        "y": -4
+      }
+    }
+  },
+  {
+    "prompt": "x+2y=7 と 4x-3y=17 の解のうち y の値は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "解は x=5, y=1",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 5,
+        "y": 1
+      }
+    }
+  },
+  {
+    "prompt": "3x-2y=2 と x+4y=10 の解のうち x の値は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "解は x=2, y=2",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 2,
+        "y": 2
+      }
+    }
+  },
+  {
+    "prompt": "2x+3y=6 と 5x+y=-11 の解のうち y の値は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "解は x=-3, y=4",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": -3,
+        "y": 4
+      }
+    }
+  },
+  {
+    "prompt": "4x-y=9 と x+2y=9 の解のうち x の値は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "解は x=3, y=3",
+    "check": {
+      "mode": "linsys",
+      "vars": {
+        "x": 3,
+        "y": 3
+      }
+    }
+  }
+]

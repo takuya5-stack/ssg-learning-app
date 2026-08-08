@@ -1,0 +1,242 @@
+[
+  {
+    "prompt": "-7+(-5) を計算すると？",
+    "answer": "-12",
+    "choices": null,
+    "explanation": "-7 に -5 をたす → -12"
+  },
+  {
+    "prompt": "8-(-3) を計算すると？",
+    "answer": "11",
+    "choices": null,
+    "explanation": "8 から -3 をひく（＝3をたす）→ 11"
+  },
+  {
+    "prompt": "-4-9 を計算すると？",
+    "answer": "-13",
+    "choices": null,
+    "explanation": "-4 から 9 をひく（＝(-9)をたす）→ -13"
+  },
+  {
+    "prompt": "-6+10 を計算すると？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "-6 に 10 をたす → 4"
+  },
+  {
+    "prompt": "-15+7 を計算すると？",
+    "answer": "-8",
+    "choices": null,
+    "explanation": "-15 に 7 をたす → -8"
+  },
+  {
+    "prompt": "3-11 を計算すると？",
+    "answer": "-8",
+    "choices": null,
+    "explanation": "3 から 11 をひく（＝(-11)をたす）→ -8"
+  },
+  {
+    "prompt": "-8-(-12) を計算すると？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "-8 から -12 をひく（＝12をたす）→ 4"
+  },
+  {
+    "prompt": "14+(-20) を計算すると？",
+    "answer": "-6",
+    "choices": null,
+    "explanation": "14 に -20 をたす → -6"
+  },
+  {
+    "prompt": "-9+(-6) を計算すると？",
+    "answer": "-15",
+    "choices": null,
+    "explanation": "-9 に -6 をたす → -15"
+  },
+  {
+    "prompt": "5-(-9) を計算すると？",
+    "answer": "14",
+    "choices": null,
+    "explanation": "5 から -9 をひく（＝9をたす）→ 14"
+  },
+  {
+    "prompt": "(-3)×(-4) を計算すると？",
+    "answer": "12",
+    "choices": null,
+    "explanation": "符号は 同じ → ＋、3×4=12 → 12"
+  },
+  {
+    "prompt": "(-5)×6 を計算すると？",
+    "answer": "-30",
+    "choices": null,
+    "explanation": "符号は ちがう → －、5×6=30 → -30"
+  },
+  {
+    "prompt": "7×(-8) を計算すると？",
+    "answer": "-56",
+    "choices": null,
+    "explanation": "符号は ちがう → －、7×8=56 → -56"
+  },
+  {
+    "prompt": "(-2)×(-9) を計算すると？",
+    "answer": "18",
+    "choices": null,
+    "explanation": "符号は 同じ → ＋、2×9=18 → 18"
+  },
+  {
+    "prompt": "(-6)×5 を計算すると？",
+    "answer": "-30",
+    "choices": null,
+    "explanation": "符号は ちがう → －、6×5=30 → -30"
+  },
+  {
+    "prompt": "12×(-3) を計算すると？",
+    "answer": "-36",
+    "choices": null,
+    "explanation": "符号は ちがう → －、12×3=36 → -36"
+  },
+  {
+    "prompt": "(-24)÷6 を計算すると？",
+    "answer": "-4",
+    "choices": null,
+    "explanation": "符号は ちがう → －、24÷6=4 → -4"
+  },
+  {
+    "prompt": "(-36)÷(-9) を計算すると？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "符号は 同じ → ＋、36÷9=4 → 4"
+  },
+  {
+    "prompt": "45÷(-5) を計算すると？",
+    "answer": "-9",
+    "choices": null,
+    "explanation": "符号は ちがう → －、45÷5=9 → -9"
+  },
+  {
+    "prompt": "(-56)÷8 を計算すると？",
+    "answer": "-7",
+    "choices": null,
+    "explanation": "符号は ちがう → －、56÷8=7 → -7"
+  },
+  {
+    "prompt": "72÷(-8) を計算すると？",
+    "answer": "-9",
+    "choices": null,
+    "explanation": "符号は ちがう → －、72÷8=9 → -9"
+  },
+  {
+    "prompt": "(-63)÷(-7) を計算すると？",
+    "answer": "9",
+    "choices": null,
+    "explanation": "符号は 同じ → ＋、63÷7=9 → 9"
+  },
+  {
+    "prompt": "(-3)² を計算すると？",
+    "answer": "9",
+    "choices": null,
+    "explanation": "(-3)×(-3) → 9。カッコの中の-3を2回かける"
+  },
+  {
+    "prompt": "-3² を計算すると？",
+    "answer": "-9",
+    "choices": null,
+    "explanation": "3²にマイナスがついた形。-(3×3) → -9"
+  },
+  {
+    "prompt": "(-2)³ を計算すると？",
+    "answer": "-8",
+    "choices": null,
+    "explanation": "(-2)×(-2)×(-2) → -8。3回（奇数回）かけるので－"
+  },
+  {
+    "prompt": "(-2)⁴ を計算すると？",
+    "answer": "16",
+    "choices": null,
+    "explanation": "(-2)を4回（偶数回）かけるので＋。16"
+  },
+  {
+    "prompt": "-2⁴ を計算すると？",
+    "answer": "-16",
+    "choices": null,
+    "explanation": "-(2×2×2×2) → -16"
+  },
+  {
+    "prompt": "(-5)² を計算すると？",
+    "answer": "25",
+    "choices": null,
+    "explanation": "(-5)×(-5) → 25"
+  },
+  {
+    "prompt": "-5² を計算すると？",
+    "answer": "-25",
+    "choices": null,
+    "explanation": "-(5×5) → -25"
+  },
+  {
+    "prompt": "(-4)² を計算すると？",
+    "answer": "16",
+    "choices": null,
+    "explanation": "(-4)×(-4) → 16"
+  },
+  {
+    "prompt": "-2+3×(-4) を計算すると？",
+    "answer": "-14",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → -14"
+  },
+  {
+    "prompt": "12÷(-3)-5 を計算すると？",
+    "answer": "-9",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → -9"
+  },
+  {
+    "prompt": "(-2)²-3×2 を計算すると？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → -2"
+  },
+  {
+    "prompt": "8-(-2)×3 を計算すると？",
+    "answer": "14",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 14"
+  },
+  {
+    "prompt": "-3×4+20 を計算すると？",
+    "answer": "8",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 8"
+  },
+  {
+    "prompt": "(-18)÷(-3)+1 を計算すると？",
+    "answer": "7",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 7"
+  },
+  {
+    "prompt": "5-2×(-6) を計算すると？",
+    "answer": "17",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 17"
+  },
+  {
+    "prompt": "(-4)²÷8-3 を計算すると？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → -1"
+  },
+  {
+    "prompt": "-10+(-2)×(-5) を計算すると？",
+    "answer": "0",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 0"
+  },
+  {
+    "prompt": "6÷(-2)+(-3)² を計算すると？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "×と÷を先に計算してから、+と-を計算する → 6"
+  }
+]
