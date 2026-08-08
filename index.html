@@ -102,13 +102,14 @@
   /* 数学の入力式は教科カラー（青）で */
   .ansform.math .ansinput:focus{border-color:#39B2F5;}
   .ansform.math .ansbtn{background:#39B2F5;}
-  /* 解説パネル（数学で間違えたときだけ出し、「つぎへ」を押すまで待つ） */
-  .qexp{margin-top:16px; padding:14px 16px; border-radius:16px; background:#DDF0FE;
-    border:2px solid #39B2F5; box-shadow:var(--shadow-sm); animation:fade .18s ease;}
-  .qexp .lab{font-size:13px; font-weight:800; color:#1B7FB8; margin-bottom:6px;}
+  /* 解説パネル（間違えたときだけ出し、「つぎへ」を押すまで待つ）。色は教科色を流し込む */
+  .qexp{--exp:#39B2F5; --expBg:#DDF0FE;
+    margin-top:16px; padding:14px 16px; border-radius:16px; background:var(--expBg);
+    border:2px solid var(--exp); box-shadow:var(--shadow-sm); animation:fade .18s ease;}
+  .qexp .lab{font-size:13px; font-weight:800; color:var(--exp); filter:brightness(.8); margin-bottom:6px;}
   .qexp .lab i{margin-right:4px;}
   .qexp .txt{font-size:17px; font-weight:800; color:var(--ink); line-height:1.55; word-break:break-word;}
-  .qexp .ansbtn{display:block; width:100%; margin-top:12px; padding:14px 0; background:#39B2F5;}
+  .qexp .ansbtn{display:block; width:100%; margin-top:12px; padding:14px 0; background:var(--exp);}
   .qnote{text-align:center; font-size:12px; color:var(--muted2); margin-top:18px; font-weight:600;}
 
   /* result */
@@ -533,7 +534,8 @@ async function startQuiz(slug, unit, grade){
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
   // 英語=意味／国語の漢字(grade有)=読み／国語の古文(grade無)=意味／数学=計算／その他=選択
   $('qAsk').textContent = currentSubject==='english' ? 'この意味は？'
-    : currentSubject==='japanese' ? (currentGrade ? '読みをひらがなで入力' : 'この意味は？')
+    : currentSubject==='japanese' ? (currentGrade ? '読みをひらがなで入力'
+        : currentUnit===KANA_UNIT ? '現代仮名遣いに直して入力' : 'この意味は？')
     : currentSubject==='math' ? (isMathInput() ? 'ノートで計算して、答えを入力' : 'ノートで計算してからえらぼう')
     : '答えをえらぼう';
   // 数学は「紙で解いてから答える」教科なので、注意書きも差し替える
@@ -579,6 +581,9 @@ $('qSpk').addEventListener('click', playWord);
 // 数学で「入力式」にする単元（答えが必ず整数になるもの）。ここに無い単元は4択のまま
 const MATH_INPUT_UNITS = ['正負の数','一次方程式','比例と反比例','連立方程式','一次関数','角の計算','二次方程式'];
 const isMathInput = ()=> currentSubject==='math' && MATH_INPUT_UNITS.includes(currentUnit);
+// 古文の「歴史的仮名遣い」＝現代仮名遣いをひらがなで入力させる単元
+const KANA_UNIT = '歴史的仮名遣い';
+const isKanaInput = ()=> currentSubject==='japanese' && currentUnit===KANA_UNIT;
 
 function renderQuestion(){
   const q = questions[idx];
@@ -608,9 +613,9 @@ function renderQuestion(){
     spk.disabled = true;
   }
   const wrap = $('qOpts'); wrap.innerHTML='';
-  // 漢字（国語・学年あり）は読みを、数学の二次方程式は答えの数を入力式に。それ以外は4択
+  // 漢字（国語・学年あり）は読みを、歴史的仮名遣いは現代仮名遣いを、数学の一部は答えの数を入力式に。それ以外は4択
   const mathInput = isMathInput();
-  if((currentSubject==='japanese' && currentGrade) || mathInput){
+  if((currentSubject==='japanese' && currentGrade) || isKanaInput() || mathInput){
     const form = document.createElement('div'); form.className='ansform' + (mathInput?' math':'');
     const inp = document.createElement('input');
     inp.className='ansinput'; inp.id='qInput'; inp.type='text';
@@ -672,7 +677,8 @@ function submitInput(){
   } else {
     const norm = toHira(inp.value);
     const correctFull = toHira(q.answer);
-    const okuri = okuriganaOf(q.prompt);
+    // 送り仮名の省略を許すのは漢字の読み（学年あり）だけ。歴史的仮名遣いは完全一致で見る
+    const okuri = currentGrade ? okuriganaOf(q.prompt) : '';
     const correctNoOkuri = (okuri && correctFull.endsWith(okuri)) ? correctFull.slice(0, -okuri.length) : '';
     isOk = norm !== '' && (norm === correctFull || (correctNoOkuri !== '' && norm === correctNoOkuri));
     // 送り仮名を省略していても、サーバーには正式な表記を送って加点判定を一致させる
@@ -686,7 +692,8 @@ function submitInput(){
     inp.style.borderColor = 'var(--green)';
   } else {
     fb.classList.add('ng');
-    fb.innerHTML = '× 正しい'+(mathInput?'答え':'読み')+'：<span style="color:var(--green)">'+q.answer+'</span>';
+    const lab = mathInput ? '答え' : isKanaInput() ? '書き方' : '読み';
+    fb.innerHTML = '× 正しい'+lab+'：<span style="color:var(--green)">'+q.answer+'</span>';
     inp.style.borderColor = 'var(--red)';
   }
   afterAnswer(isOk, q, 800, 1500);
@@ -694,9 +701,13 @@ function submitInput(){
 
 // ---------- 解説パネル（数学） ----------
 function showExplain(text){
+  const el = $('qExp');
   $('qExpTxt').textContent = text;
-  $('qExp').style.display = 'block';
-  try{ $('qExp').scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(e){}
+  // パネルの色は教科の色に合わせる（数学=青 / 国語=桃 …）
+  const s = SUBJECTS.find(x=>x.slug===currentSubject);
+  if(s){ el.style.setProperty('--exp', s.c); el.style.setProperty('--expBg', s.ct); }
+  el.style.display = 'block';
+  try{ el.scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(e){}
 }
 function hideExplain(){ $('qExp').style.display = 'none'; }
 function nextQuestion(){
@@ -707,10 +718,10 @@ function nextQuestion(){
 }
 $('qNext').addEventListener('click', nextQuestion);
 
-// 回答後の進み方。数学で間違えたときは解説を出し、「つぎへ」を押すまで待つ
-// （解説はRPCが返さない環境ではundefinedになるので、その場合は従来どおり自動で進む）
+// 回答後の進み方。間違えたときに解説がある問題（数学・歴史的仮名遣い）は
+// 解説を出して「つぎへ」を押すまで待つ。解説が無い問題は従来どおり自動で進む
 function afterAnswer(isOk, q, okMs, ngMs){
-  if(currentSubject==='math' && !isOk && q.explanation){ showExplain(q.explanation); return; }
+  if(!isOk && q.explanation){ showExplain(q.explanation); return; }
   setTimeout(nextQuestion, isOk ? okMs : ngMs);
 }
 
@@ -812,7 +823,8 @@ const SUBJECTS = [
        '中2':['アイスプラネット','漢字に親しもう1','クマゼミ増加の原因を探る','漢字に親しもう2','言葉の力','字のない葉書','漢字2（同訓・同音）','モアイは語る―地球の未来','扇の的（平家物語ほか）','君は「最後の晩餐」を知っているか','「自分らしさ」を認め合う社会へ','走れメロス','漢字に親しもう5・漢字3'],
        '中3':['握手','漢字に親しもう1','漢字に親しもう2','故郷','漢字2（漢字の造語力）','漢字に親しもう3','夏草（おくのほそ道）','アラスカとの出会い']
      }},
-     {name:'古文', topics:['形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']}
+     // 歴史的仮名遣いだけは意味ではなく「現代仮名遣いに直す」入力式（KANA_UNIT で分岐）
+     {name:'古文', topics:['歴史的仮名遣い','形容詞・形容動詞','動詞','敬語','時・季節の語','副詞・呼応','その他の重要語']}
    ]},
   {slug:'science', nm:'理科', icon:'ti-flask', on:false, c:'#25C186', ct:'#DDF6EC'},
   {slug:'social', nm:'社会', icon:'ti-globe', on:true, c:'#8C6BEE', ct:'#ECE6FE', topics:['地理','歴史','公民']},
