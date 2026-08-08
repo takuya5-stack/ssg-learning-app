@@ -1,0 +1,194 @@
+[
+  {
+    "prompt": "x²-5x+6=0 の解のうち、小さい方の x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "(x-2)(x-3)=0 → x=2, 3"
+  },
+  {
+    "prompt": "x²-5x+4=0 の解のうち、大きい方の x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "(x-1)(x-4)=0 → x=1, 4"
+  },
+  {
+    "prompt": "x²+5x+6=0 の解のうち、小さい方の x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "(x+2)(x+3)=0 → x=-3, -2"
+  },
+  {
+    "prompt": "x²+6x+5=0 の解のうち、大きい方の x は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "(x+1)(x+5)=0 → x=-5, -1"
+  },
+  {
+    "prompt": "x²+x-6=0 の解のうち、小さい方の x は？",
+    "answer": "-3",
+    "choices": null,
+    "explanation": "(x+3)(x-2)=0 → x=-3, 2"
+  },
+  {
+    "prompt": "x²+3x-4=0 の解のうち、大きい方の x は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "(x+4)(x-1)=0 → x=-4, 1"
+  },
+  {
+    "prompt": "x²-7x+6=0 の解のうち、小さい方の x は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "(x-1)(x-6)=0 → x=1, 6"
+  },
+  {
+    "prompt": "x²-3x-10=0 の解のうち、大きい方の x は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "(x+2)(x-5)=0 → x=-2, 5"
+  },
+  {
+    "prompt": "x²-8x+15=0 の解のうち、小さい方の x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "(x-3)(x-5)=0 → x=3, 5"
+  },
+  {
+    "prompt": "x²+7x+6=0 の解のうち、大きい方の x は？",
+    "answer": "-1",
+    "choices": null,
+    "explanation": "(x+6)(x+1)=0 → x=-6, -1"
+  },
+  {
+    "prompt": "x²-9x+14=0 の解のうち、小さい方の x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "(x-2)(x-7)=0 → x=2, 7"
+  },
+  {
+    "prompt": "x²+6x+8=0 の解のうち、大きい方の x は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "(x+4)(x+2)=0 → x=-4, -2"
+  },
+  {
+    "prompt": "x²-10x+9=0 の解のうち、小さい方の x は？",
+    "answer": "1",
+    "choices": null,
+    "explanation": "(x-1)(x-9)=0 → x=1, 9"
+  },
+  {
+    "prompt": "x²+2x-15=0 の解のうち、大きい方の x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "(x+5)(x-3)=0 → x=-5, 3"
+  },
+  {
+    "prompt": "x²-4x+4=0 の解 x は？",
+    "answer": "2",
+    "choices": null,
+    "explanation": "(x-2)²=0 → x=2"
+  },
+  {
+    "prompt": "x²-6x+9=0 の解 x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "(x-3)²=0 → x=3"
+  },
+  {
+    "prompt": "x²-10x+25=0 の解 x は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "(x-5)²=0 → x=5"
+  },
+  {
+    "prompt": "x²+8x+16=0 の解 x は？",
+    "answer": "-4",
+    "choices": null,
+    "explanation": "(x+4)²=0 → x=-4"
+  },
+  {
+    "prompt": "x²-14x+49=0 の解 x は？",
+    "answer": "7",
+    "choices": null,
+    "explanation": "(x-7)²=0 → x=7"
+  },
+  {
+    "prompt": "x²=16 の解のうち、正の方の x は？",
+    "answer": "4",
+    "choices": null,
+    "explanation": "x=±4 なので正の解は 4"
+  },
+  {
+    "prompt": "x²=36 の解のうち、正の方の x は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "x=±6 なので正の解は 6"
+  },
+  {
+    "prompt": "x²=64 の解のうち、正の方の x は？",
+    "answer": "8",
+    "choices": null,
+    "explanation": "x=±8 なので正の解は 8"
+  },
+  {
+    "prompt": "x²=81 の解のうち、正の方の x は？",
+    "answer": "9",
+    "choices": null,
+    "explanation": "x=±9 なので正の解は 9"
+  },
+  {
+    "prompt": "x²=121 の解のうち、正の方の x は？",
+    "answer": "11",
+    "choices": null,
+    "explanation": "x=±11 なので正の解は 11"
+  },
+  {
+    "prompt": "x²-9=0 の解のうち、正の方の x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "(x+3)(x-3)=0 → x=±3、正の解は 3"
+  },
+  {
+    "prompt": "x²-25=0 の解のうち、正の方の x は？",
+    "answer": "5",
+    "choices": null,
+    "explanation": "(x+5)(x-5)=0 → x=±5、正の解は 5"
+  },
+  {
+    "prompt": "x²-144=0 の解のうち、正の方の x は？",
+    "answer": "12",
+    "choices": null,
+    "explanation": "(x+12)(x-12)=0 → x=±12、正の解は 12"
+  },
+  {
+    "prompt": "x²+5x=0 の解のうち、0でない方の x は？",
+    "answer": "-5",
+    "choices": null,
+    "explanation": "x(x+5)=0 → x=0, -5"
+  },
+  {
+    "prompt": "x²-3x=0 の解のうち、0でない方の x は？",
+    "answer": "3",
+    "choices": null,
+    "explanation": "x(x-3)=0 → x=0, 3"
+  },
+  {
+    "prompt": "x²+8x=0 の解のうち、0でない方の x は？",
+    "answer": "-8",
+    "choices": null,
+    "explanation": "x(x+8)=0 → x=0, -8"
+  },
+  {
+    "prompt": "x²-6x=0 の解のうち、0でない方の x は？",
+    "answer": "6",
+    "choices": null,
+    "explanation": "x(x-6)=0 → x=0, 6"
+  },
+  {
+    "prompt": "x²+2x=0 の解のうち、0でない方の x は？",
+    "answer": "-2",
+    "choices": null,
+    "explanation": "x(x+2)=0 → x=0, -2"
+  }
+]

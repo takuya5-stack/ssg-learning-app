@@ -99,6 +99,16 @@
   .ansfb{margin-top:16px; text-align:center; font-size:22px; font-weight:800; min-height:30px;}
   .ansfb.ok{color:var(--green);} .ansfb.ng{color:var(--red);}
   .ansfb small{display:block; font-size:14px; font-weight:700; color:var(--muted2); margin-top:4px;}
+  /* 数学の入力式は教科カラー（青）で */
+  .ansform.math .ansinput:focus{border-color:#39B2F5;}
+  .ansform.math .ansbtn{background:#39B2F5;}
+  /* 解説パネル（数学で間違えたときだけ出し、「つぎへ」を押すまで待つ） */
+  .qexp{margin-top:16px; padding:14px 16px; border-radius:16px; background:#DDF0FE;
+    border:2px solid #39B2F5; box-shadow:var(--shadow-sm); animation:fade .18s ease;}
+  .qexp .lab{font-size:13px; font-weight:800; color:#1B7FB8; margin-bottom:6px;}
+  .qexp .lab i{margin-right:4px;}
+  .qexp .txt{font-size:17px; font-weight:800; color:var(--ink); line-height:1.55; word-break:break-word;}
+  .qexp .ansbtn{display:block; width:100%; margin-top:12px; padding:14px 0; background:#39B2F5;}
   .qnote{text-align:center; font-size:12px; color:var(--muted2); margin-top:18px; font-weight:600;}
 
   /* result */
@@ -254,7 +264,12 @@
       <button class="spk" id="qSpk" title="音声を聞く"><i class="ti ti-volume"></i> 音声</button>
     </div>
     <div class="opts" id="qOpts"></div>
-    <p class="qnote">全問正解でボーナス ・ 苦手はまた明日出ます</p>
+    <div class="qexp" id="qExp" style="display:none;">
+      <div class="lab"><i class="ti ti-bulb"></i> 考え方</div>
+      <div class="txt" id="qExpTxt"></div>
+      <button class="ansbtn" id="qNext">つぎへ</button>
+    </div>
+    <p class="qnote" id="qNote">全問正解でボーナス ・ 苦手はまた明日出ます</p>
   </div>
 
   <!-- 結果 -->
@@ -516,10 +531,15 @@ async function startQuiz(slug, unit, grade){
   const s = SUBJECTS.find(x=>x.slug===currentSubject);
   const nm = s ? s.nm : '問題';
   $('qSubject').textContent = '今日の'+nm + (currentUnit?'｜'+currentUnit:'') + (currentGrade?' '+currentGrade:'');
-  // 英語=意味／国語の漢字(grade有)=読み／国語の古文(grade無)=意味／その他=選択
+  // 英語=意味／国語の漢字(grade有)=読み／国語の古文(grade無)=意味／数学=計算／その他=選択
   $('qAsk').textContent = currentSubject==='english' ? 'この意味は？'
     : currentSubject==='japanese' ? (currentGrade ? '読みをひらがなで入力' : 'この意味は？')
+    : currentSubject==='math' ? (isMathInput() ? 'ノートで計算して、答えを入力' : 'ノートで計算してからえらぼう')
     : '答えをえらぼう';
+  // 数学は「紙で解いてから答える」教科なので、注意書きも差し替える
+  $('qNote').textContent = currentSubject==='math'
+    ? 'ノートに途中式を書いてから答えよう ・ 時間制限はありません'
+    : '全問正解でボーナス ・ 苦手はまた明日出ます';
   questions = data; idx = 0; answers = [];
   show('quiz');
   renderQuestion();
@@ -556,8 +576,13 @@ function playWord(){
 }
 $('qSpk').addEventListener('click', playWord);
 
+// 数学で「入力式」にする単元（答えが必ず整数になるもの）。ほかの単元は4択のまま
+const MATH_INPUT_UNITS = ['二次方程式'];
+const isMathInput = ()=> currentSubject==='math' && MATH_INPUT_UNITS.includes(currentUnit);
+
 function renderQuestion(){
   const q = questions[idx];
+  hideExplain();
   $('qCount').textContent = 'Q'+(idx+1)+' / '+questions.length;
   $('qBar').style.width = (idx/questions.length*100)+'%';
   const w = $('qWord');
@@ -583,14 +608,16 @@ function renderQuestion(){
     spk.disabled = true;
   }
   const wrap = $('qOpts'); wrap.innerHTML='';
-  // 漢字（国語・学年あり）は読みを入力式に。それ以外は4択
-  if(currentSubject==='japanese' && currentGrade){
-    const form = document.createElement('div'); form.className='ansform';
+  // 漢字（国語・学年あり）は読みを、数学の二次方程式は答えの数を入力式に。それ以外は4択
+  const mathInput = isMathInput();
+  if((currentSubject==='japanese' && currentGrade) || mathInput){
+    const form = document.createElement('div'); form.className='ansform' + (mathInput?' math':'');
     const inp = document.createElement('input');
     inp.className='ansinput'; inp.id='qInput'; inp.type='text';
-    inp.setAttribute('inputmode','kana'); inp.autocomplete='off';
+    // 数学は負の数を打つので数字専用キーボードにはしない（iOSのテンキーにマイナスが無いため）
+    inp.setAttribute('inputmode', mathInput?'text':'kana'); inp.autocomplete='off';
     inp.autocapitalize='off'; inp.spellcheck=false; inp.enterKeyHint='done';
-    inp.placeholder='ひらがな';
+    inp.placeholder = mathInput ? '答えの数（例 -3）' : 'ひらがな';
     inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); submitInput(); } });
     const btn = document.createElement('button');
     btn.className='ansbtn'; btn.id='qSubmit'; btn.textContent='こたえる';
@@ -619,18 +646,38 @@ function okuriganaOf(prompt){
   const m = toHira(prompt).match(/[ぁ-んー]+$/);
   return m ? m[0] : '';
 }
-// 入力式（漢字の読み）の回答処理。送り仮名は書いても書かなくても正解扱いにする
+// 数学の入力（答えは整数）の正規化。全角→半角・空白除去・「x=」を落とす・各種マイナスを - に統一
+// サーバーは文字列の完全一致で採点するので、正規化した値を送って画面の○×と一致させる
+function toMath(s){
+  return (s||'')
+    .replace(/[Ａ-Ｚａ-ｚ０-９＝＋－]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+    .replace(/[−–—ー―‐‑ｰ]/g, '-')   // マイナスに見える記号（長音記号・ダッシュ類）はすべて - に
+    .replace(/\s+/g, '')
+    .replace(/^x=/i, '')
+    .replace(/^\+/, '');
+}
+
+// 入力式の回答処理。漢字＝送り仮名の有無どちらも正解／数学＝表記ゆれを正規化して判定
 function submitInput(){
   const q = questions[idx];
   const inp = $('qInput'), btn = $('qSubmit'), fb = $('qFb');
   if(!inp || inp.disabled) return;
-  const norm = toHira(inp.value);
-  const correctFull = toHira(q.answer);
-  const okuri = okuriganaOf(q.prompt);
-  const correctNoOkuri = (okuri && correctFull.endsWith(okuri)) ? correctFull.slice(0, -okuri.length) : '';
-  const isOk = norm !== '' && (norm === correctFull || (correctNoOkuri !== '' && norm === correctNoOkuri));
-  // 送り仮名を省略していても、サーバーには正式な表記を送って加点判定を一致させる
-  answers.push({ question_id: q.question_id, answer: isOk ? correctFull : norm });
+  const mathInput = isMathInput();
+  let isOk, sendVal;
+  if(mathInput){
+    const norm = toMath(inp.value);
+    isOk = norm !== '' && norm === toMath(q.answer);
+    sendVal = isOk ? q.answer : norm;   // 正解なら登録どおりの表記を送る
+  } else {
+    const norm = toHira(inp.value);
+    const correctFull = toHira(q.answer);
+    const okuri = okuriganaOf(q.prompt);
+    const correctNoOkuri = (okuri && correctFull.endsWith(okuri)) ? correctFull.slice(0, -okuri.length) : '';
+    isOk = norm !== '' && (norm === correctFull || (correctNoOkuri !== '' && norm === correctNoOkuri));
+    // 送り仮名を省略していても、サーバーには正式な表記を送って加点判定を一致させる
+    sendVal = isOk ? correctFull : norm;
+  }
+  answers.push({ question_id: q.question_id, answer: sendVal });
   inp.disabled = true; btn.disabled = true;
   fb.classList.remove('ok','ng');
   if(isOk){
@@ -638,14 +685,32 @@ function submitInput(){
     inp.style.borderColor = 'var(--green)';
   } else {
     fb.classList.add('ng');
-    fb.innerHTML = '× 正しい読み：<span style="color:var(--green)">'+q.answer+'</span>';
+    fb.innerHTML = '× 正しい'+(mathInput?'答え':'読み')+'：<span style="color:var(--green)">'+q.answer+'</span>';
     inp.style.borderColor = 'var(--red)';
   }
-  setTimeout(()=>{
-    idx++;
-    if(idx < questions.length){ renderQuestion(); }
-    else finishQuiz();
-  }, isOk ? 800 : 1500);
+  afterAnswer(isOk, q, 800, 1500);
+}
+
+// ---------- 解説パネル（数学） ----------
+function showExplain(text){
+  $('qExpTxt').textContent = text;
+  $('qExp').style.display = 'block';
+  try{ $('qExp').scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(e){}
+}
+function hideExplain(){ $('qExp').style.display = 'none'; }
+function nextQuestion(){
+  hideExplain();
+  idx++;
+  if(idx < questions.length){ renderQuestion(); }
+  else finishQuiz();
+}
+$('qNext').addEventListener('click', nextQuestion);
+
+// 回答後の進み方。数学で間違えたときは解説を出し、「つぎへ」を押すまで待つ
+// （解説はRPCが返さない環境ではundefinedになるので、その場合は従来どおり自動で進む）
+function afterAnswer(isOk, q, okMs, ngMs){
+  if(currentSubject==='math' && !isOk && q.explanation){ showExplain(q.explanation); return; }
+  setTimeout(nextQuestion, isOk ? okMs : ngMs);
 }
 
 function pick(btn, choice){
@@ -658,11 +723,8 @@ function pick(btn, choice){
     if(o.dataset.choice === q.answer) o.classList.add('right');   // 正解は必ず緑
   });
   if(!isOk) btn.classList.add('wrong');   // 間違って選んだものは赤
-  setTimeout(()=>{
-    idx++;
-    if(idx < questions.length){ renderQuestion(); }
-    else finishQuiz();
-  }, isOk ? 550 : 950);   // 間違いは正解を確認する時間を長めに
+  // 間違いは正解を確認する時間を長めに（数学は式を見比べるのでさらに長く）
+  afterAnswer(isOk, q, 550, currentSubject==='math' ? 1800 : 950);
 }
 
 async function finishQuiz(){
@@ -733,7 +795,14 @@ const SUBJECTS = [
    korekore:{
      '中1':['Part1','Part2','Part3','Part4','Part5','Part6','Part7','Part8']
    }},
-  {slug:'math', nm:'数学', icon:'ti-math', on:false, c:'#39B2F5', ct:'#DDF0FE'},
+  // 数学は英語と同じ 学年→単元 の2階層。中3の計算4単元から開通（中1中2は準備中）
+  {slug:'math', nm:'数学', icon:'ti-math', on:true, c:'#39B2F5', ct:'#DDF0FE',
+   gradeFirst:true, grades:true, unitNoun:'単元',
+   units:{
+     '中1':[],
+     '中2':[],
+     '中3':['式の展開','因数分解','平方根','二次方程式']
+   }},
   {slug:'japanese', nm:'国語', icon:'ti-book', on:true, c:'#FF6FA5', ct:'#FFE3EF',
    cats:[
      // 漢字は 学年→単元 の階層（gradeUnits）。grade=中1等・unit=単元名 で登録
@@ -974,7 +1043,7 @@ function showCollections(s, grade){
 // Unit選択（英語：学年のあと）。各Unitに「正解数/総数」を表示
 async function showUnits(s, grade, opts){
   opts = opts || {};
-  const noun = opts.noun || 'Unit';
+  const noun = opts.noun || s.unitNoun || 'Unit';   // 教科ごとの呼び名（数学=単元・英語=Unit）
   const colLabel = opts.label ? '｜'+opts.label : '';
   $('tpTitle').textContent = s.nm + '｜' + grade + colLabel + '｜'+noun+'をえらぶ';
   const wrap = $('tpGrid');
