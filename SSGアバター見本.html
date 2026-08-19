@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><title>SSGアバター 見本</title>
+<style>
+  :root{--cream:#FCFAF4;--ink:#2E3A46;--muted:#8A8578;--line:#E8E0CC;--orange:#FF9614;--pink:#FF6FA5;--blue:#39B2F5;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN",system-ui,sans-serif;padding:24px;}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;font-weight:600;margin:0 0 22px}
+  h2{font-size:16px;margin:26px 0 10px;padding-left:10px;border-left:5px solid var(--orange);}
+  .row{display:flex;flex-wrap:wrap;gap:14px}
+  .card{background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px;text-align:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.05)}
+  .card .nm{font-size:12px;font-weight:800;margin-top:4px}
+  .card .pr{font-size:11px;font-weight:700;color:var(--orange)}
+  .card .pr.free{color:#25C186}
+  svg{display:block;border-radius:50%}
+  /* きせかえ画面のモック */
+  .phone{width:390px;background:var(--cream);border:3px solid var(--line);border-radius:26px;padding:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.10)}
+  .ph-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .ph-top .big{border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.12);border-radius:50%}
+  .coin{background:#FFF1D6;border:2px solid #FFD98A;border-radius:14px;padding:8px 12px;font-weight:800;font-size:15px}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .tab{padding:7px 13px;border-radius:999px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:13px}
+  .tab.on{background:var(--pink);border-color:var(--pink);color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .item{background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px;text-align:center}
+  .item.sel{border-color:var(--pink);box-shadow:0 0 0 3px #FFE3EF}
+  .item.lock{opacity:.55}
+  .item .nm{font-size:11px;font-weight:800;margin-top:2px}
+  .item .pr{font-size:11px;font-weight:800;color:var(--orange)}
+  .item .pr.have{color:#25C186}
+  .rank{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);
+    border-radius:16px;padding:8px 12px;margin-bottom:8px;font-weight:800}
+  .rank .no{width:26px;text-align:center;font-size:15px}
+  .rank .pt{margin-left:auto;color:var(--orange)}
+  .rank.me{background:#F4EEFF;border-color:#8C6BEE}
+  .note{font-size:12px;color:var(--muted);font-weight:600;margin-top:8px;line-height:1.7}
+</style></head>
+<body>
+<h1>SSG学習アプリ アバター 見本</h1>
+<p class="sub">SVGで描いたパーツを重ねています。外部サービスは使わず、すべてリポジトリに入ります。</p>
+
+<h2>組み合わせの例</h2>
+<div class="row" id="samples"></div>
+
+<h2>きせかえ画面のイメージ（スマホ）</h2>
+<div class="phone">
+  <div class="ph-top">
+    <div id="mockAvatar"></div>
+    <div>
+      <div style="font-size:17px;font-weight:800">かりん <span style="font-size:12px;color:#8A8578">中3</span></div>
+      <div class="coin" style="margin-top:6px">🪙 コイン 211</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <span class="tab">はだ</span><span class="tab on">かみ</span><span class="tab">かお</span>
+    <span class="tab">ふく</span><span class="tab">ぼうし</span><span class="tab">アクセ</span><span class="tab">はいけい</span>
+  </div>
+  <div class="grid" id="mockGrid"></div>
+  <p class="note">持っていないものは薄く表示され、タップで「10コインで買う？」の確認が出ます。<br>コインだけ減り、レベル（XP）は下がりません。</p>
+</div>
+
+<h2>ランキングに並ぶイメージ</h2>
+<div style="width:390px">
+  <div class="rank"><span class="no">🥇</span><span id="r1"></span><span>かりん</span><span class="pt">42 XP</span></div>
+  <div class="rank"><span class="no">🥈</span><span id="r2"></span><span>梨香子</span><span class="pt">31 XP</span></div>
+  <div class="rank me"><span class="no">🥉</span><span id="r3"></span><span>樹 <span style="font-size:11px;background:#8C6BEE;color:#fff;padding:2px 6px;border-radius:8px">あなた</span></span><span class="pt">18 XP</span></div>
+  <div class="rank"><span class="no">4</span><span id="r4"></span><span>和己</span><span class="pt">9 XP</span></div>
+</div>
+
+<h2>パーツ一覧</h2>
+<div id="parts"></div>
+
+<script>
+// SSG学習アプリ アバターのパーツ定義（SVG・viewBox 120x120）
+// 重ねる順: はいけい → くび → ふく → かお(はだ) → かみ → めとくち → アクセ → ぼうし
+// price:0 は最初から持っているもの。有料はすべて10コイン
+const AVATAR_SLOTS = [
+  ['skin','はだ'], ['hair','かみ'], ['face','かお'],
+  ['body','ふく'], ['hat','ぼうし'], ['acc','アクセ'], ['bg','はいけい'],
+];
+const P = 10;   // 有料アイテムの値段（全部同じ）
+
+const AV = {
+  skin: [
+    { id:'skin1', name:'はだ1', price:0, color:'#FFE0C4' },
+    { id:'skin2', name:'はだ2', price:0, color:'#F3C79A' },
+    { id:'skin3', name:'はだ3', price:0, color:'#D9A06B' },
+  ],
+  bg: [
+    { id:'bg_cream', name:'クリーム', price:0,
+      svg:'<circle cx="60" cy="60" r="60" fill="#FDF3DC"/>' },
+    { id:'bg_sky', name:'そら', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#D9EDFF"/>'
+        +'<circle cx="30" cy="28" r="9" fill="#fff"/><circle cx="41" cy="28" r="7" fill="#fff"/>'
+        +'<circle cx="88" cy="96" r="8" fill="#fff"/><circle cx="97" cy="96" r="6" fill="#fff"/>' },
+    { id:'bg_sakura', name:'さくら', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#FFE3EF"/>'
+        +'<circle cx="24" cy="40" r="5" fill="#FFB3D1"/><circle cx="96" cy="34" r="4" fill="#FFB3D1"/>'
+        +'<circle cx="102" cy="78" r="5" fill="#FFB3D1"/><circle cx="20" cy="86" r="4" fill="#FFB3D1"/>' },
+    { id:'bg_forest', name:'もり', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#DFF3E0"/>'
+        +'<path d="M14 96 L24 66 L34 96 Z" fill="#7CC08C"/><path d="M86 96 L96 62 L106 96 Z" fill="#7CC08C"/>'
+        +'<path d="M2 100 L10 78 L18 100 Z" fill="#9BD3A8"/>' },
+    { id:'bg_night', name:'よぞら', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#2E3A66"/>'
+        +'<circle cx="26" cy="30" r="2.6" fill="#FFE68A"/><circle cx="98" cy="42" r="2" fill="#FFE68A"/>'
+        +'<circle cx="18" cy="70" r="2.2" fill="#FFE68A"/><circle cx="104" cy="86" r="2.6" fill="#FFE68A"/>'
+        +'<circle cx="40" cy="16" r="1.8" fill="#FFE68A"/>' },
+    { id:'bg_rainbow', name:'にじ', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#FFF6E0"/>'
+        +'<circle cx="60" cy="60" r="58" fill="none" stroke="#FF8FA3" stroke-width="7"/>'
+        +'<circle cx="60" cy="60" r="51" fill="none" stroke="#FFC24B" stroke-width="7"/>'
+        +'<circle cx="60" cy="60" r="44" fill="none" stroke="#7ED9A0" stroke-width="7"/>'
+        +'<circle cx="60" cy="60" r="37" fill="none" stroke="#8CC7F5" stroke-width="7"/>' },
+    { id:'bg_gold', name:'きんぴか', price:P,
+      svg:'<circle cx="60" cy="60" r="60" fill="#FFE9A8"/><circle cx="60" cy="60" r="52" fill="#FFF6D6"/>'
+        +'<path d="M22 26 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3z" fill="#F5B301"/>'
+        +'<path d="M98 84 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3z" fill="#F5B301"/>'
+        +'<path d="M96 24 l2 5 5 2 -5 2 -2 5 -2-5 -5-2 5-2z" fill="#F5B301"/>' },
+  ],
+  body: [
+    { id:'body_gym', name:'たいそうぎ', price:0,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#FFFFFF" stroke="#E3DCC8" stroke-width="2"/>'
+        +'<path d="M50 89 L60 99 L70 89" fill="none" stroke="#E3DCC8" stroke-width="2.5"/>'
+        +'<rect x="24" y="112" width="72" height="8" fill="#39B2F5"/>' },
+    { id:'body_tee', name:'Tシャツ', price:P,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#39B2F5"/>'
+        +'<rect x="24" y="104" width="72" height="7" fill="#fff" opacity=".75"/>'
+        +'<path d="M50 89 L60 98 L70 89" fill="none" stroke="#1B85C4" stroke-width="2.5"/>' },
+    { id:'body_hoodie', name:'パーカー', price:P,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#FF9614"/>'
+        +'<path d="M42 88 C46 104 74 104 78 88 Z" fill="#E07A00"/>'
+        +'<rect x="56" y="98" width="3" height="14" rx="1.5" fill="#FFF3DF"/>'
+        +'<rect x="62" y="98" width="3" height="14" rx="1.5" fill="#FFF3DF"/>' },
+    { id:'body_sweater', name:'セーター', price:P,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#25C186"/>'
+        +'<path d="M34 96 L44 106 M50 92 L60 102 M66 92 L76 102 M82 96 L92 106" stroke="#1AA06E" stroke-width="3" stroke-linecap="round"/>' },
+    { id:'body_jersey', name:'ジャージ', price:P,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#2E3A66"/>'
+        +'<rect x="30" y="96" width="6" height="24" fill="#FFC93C"/><rect x="84" y="96" width="6" height="24" fill="#FFC93C"/>'
+        +'<rect x="57" y="90" width="6" height="30" fill="#3E4E86"/>'
+        +'<path d="M48 88 L60 98 L72 88" fill="none" stroke="#FFC93C" stroke-width="2.5"/>' },
+    { id:'body_uniform', name:'せいふく', price:P,
+      svg:'<path d="M24 120 C24 98 40 88 60 88 C80 88 96 98 96 120 Z" fill="#2B4A63"/>'
+        +'<path d="M48 88 L60 104 L72 88 L72 120 L48 120 Z" fill="#F7F3E8"/>'
+        +'<path d="M60 104 L54 112 L60 120 L66 112 Z" fill="#F35247"/>' },
+    { id:'body_cape', name:'マント', price:P,
+      svg:'<path d="M14 120 C14 94 34 84 60 84 C86 84 106 94 106 120 Z" fill="#8C6BEE"/>'
+        +'<path d="M26 120 C26 100 42 90 60 90 C78 90 94 100 94 120 Z" fill="#F7F3E8"/>'
+        +'<path d="M44 84 L60 98 L76 84 L76 78 L44 78 Z" fill="#6E4FD1"/>'
+        +'<circle cx="46" cy="88" r="4.5" fill="#FFC93C"/><circle cx="74" cy="88" r="4.5" fill="#FFC93C"/>' },
+  ],
+  hair: [
+    { id:'hair_short', name:'ショート', price:0,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#3B2A22"/>' },
+    { id:'hair_bob', name:'ボブ', price:0,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#5A3A28"/>'
+        +'<rect x="31" y="46" width="9" height="26" rx="4.5" fill="#5A3A28"/>'
+        +'<rect x="80" y="46" width="9" height="26" rx="4.5" fill="#5A3A28"/>' },
+    { id:'hair_long', name:'ロング', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#3B2A22"/>'
+        +'<rect x="30" y="46" width="10" height="44" rx="5" fill="#3B2A22"/>'
+        +'<rect x="80" y="46" width="10" height="44" rx="5" fill="#3B2A22"/>' },
+    { id:'hair_spiky', name:'ツンツン', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#2B2B2B"/>'
+        +'<path d="M38 40 L44 22 L50 38 L58 20 L64 38 L72 24 L78 42 Z" fill="#2B2B2B"/>' },
+    { id:'hair_bun', name:'おだんご', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#3B2A22"/>'
+        +'<circle cx="60" cy="24" r="10" fill="#3B2A22"/>'
+        +'<rect x="52" y="30" width="16" height="5" rx="2.5" fill="#FF6FA5"/>' },
+    { id:'hair_pony', name:'ポニーテール', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#5A3A28"/>'
+        +'<circle cx="92" cy="46" r="8" fill="#5A3A28"/>'
+        +'<path d="M88 48 C102 54 100 76 90 84 C96 72 94 56 86 52 Z" fill="#5A3A28"/>' },
+    { id:'hair_twin', name:'ツインテール', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#5A3A28"/>'
+        +'<circle cx="26" cy="48" r="10" fill="#5A3A28"/><rect x="20" y="48" width="12" height="30" rx="6" fill="#5A3A28"/>'
+        +'<circle cx="94" cy="48" r="10" fill="#5A3A28"/><rect x="88" y="48" width="12" height="30" rx="6" fill="#5A3A28"/>' },
+    { id:'hair_gold', name:'きんぱつ', price:P,
+      svg:'<path d="M34 52 A26 26 0 0 1 86 52 Z" fill="#F3C13A"/>'
+        +'<rect x="30" y="46" width="10" height="38" rx="5" fill="#F3C13A"/>'
+        +'<rect x="80" y="46" width="10" height="38" rx="5" fill="#F3C13A"/>'
+        +'<path d="M44 34 L50 24 L56 34 Z" fill="#FFDE7A"/>' },
+  ],
+  face: [
+    { id:'face_normal', name:'ふつう', price:0,
+      svg:'<circle cx="50" cy="60" r="3.6" fill="#2B2B2B"/><circle cx="70" cy="60" r="3.6" fill="#2B2B2B"/>'
+        +'<path d="M55 71 Q60 75 65 71" stroke="#2B2B2B" stroke-width="2.6" fill="none" stroke-linecap="round"/>' },
+    { id:'face_smile', name:'にっこり', price:0,
+      svg:'<path d="M45 61 Q50 55 55 61" stroke="#2B2B2B" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        +'<path d="M65 61 Q70 55 75 61" stroke="#2B2B2B" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        +'<path d="M52 69 Q60 79 68 69 Z" fill="#E0574F"/>'
+        +'<circle cx="41" cy="67" r="4" fill="#FF9DB0" opacity=".6"/><circle cx="79" cy="67" r="4" fill="#FF9DB0" opacity=".6"/>' },
+    { id:'face_wink', name:'ウインク', price:P,
+      svg:'<circle cx="50" cy="60" r="3.6" fill="#2B2B2B"/>'
+        +'<path d="M65 61 Q70 55 75 61" stroke="#2B2B2B" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        +'<path d="M54 70 Q60 76 66 70" stroke="#2B2B2B" stroke-width="2.6" fill="none" stroke-linecap="round"/>' },
+    { id:'face_star', name:'キラキラ', price:P,
+      svg:'<path d="M50 54 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4-5 -5-2.4 5-2.4z" fill="#FFC93C"/>'
+        +'<path d="M70 54 l2.4 5 5 2.4 -5 2.4 -2.4 5 -2.4-5 -5-2.4 5-2.4z" fill="#FFC93C"/>'
+        +'<path d="M52 70 Q60 80 68 70 Z" fill="#E0574F"/>' },
+    { id:'face_cool', name:'クール', price:P,
+      svg:'<rect x="45" y="58" width="10" height="3" rx="1.5" fill="#2B2B2B"/>'
+        +'<rect x="65" y="58" width="10" height="3" rx="1.5" fill="#2B2B2B"/>'
+        +'<rect x="55" y="71" width="10" height="2.6" rx="1.3" fill="#2B2B2B"/>' },
+    { id:'face_ganbaru', name:'やるき', price:P,
+      svg:'<path d="M43 50 L56 55" stroke="#2B2B2B" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+        +'<path d="M77 50 L64 55" stroke="#2B2B2B" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+        +'<circle cx="50" cy="61" r="3.4" fill="#2B2B2B"/><circle cx="70" cy="61" r="3.4" fill="#2B2B2B"/>'
+        +'<path d="M51 70 Q60 79 69 70 Z" fill="#E0574F"/>'
+        +'<rect x="53" y="70" width="14" height="3" fill="#fff"/>' },
+  ],
+  hat: [
+    { id:'hat_none', name:'なし', price:0, svg:'' },
+    { id:'hat_cap', name:'キャップ', price:P,
+      svg:'<path d="M36 42 A24 22 0 0 1 84 42 Z" fill="#F35247"/>'
+        +'<ellipse cx="60" cy="43" rx="30" ry="5" fill="#C93A31"/>'
+        +'<circle cx="60" cy="22" r="4" fill="#C93A31"/>' },
+    { id:'hat_ribbon', name:'リボン', price:P,
+      svg:'<path d="M60 34 L44 26 L44 42 Z" fill="#FF6FA5"/><path d="M60 34 L76 26 L76 42 Z" fill="#FF6FA5"/>'
+        +'<circle cx="60" cy="34" r="5" fill="#E04F87"/>' },
+    { id:'hat_beanie', name:'ニットぼう', price:P,
+      svg:'<path d="M35 48 A25 24 0 0 1 85 48 Z" fill="#E0574F"/>'
+        +'<rect x="33" y="44" width="54" height="9" rx="4.5" fill="#C93A31"/>'
+        +'<circle cx="60" cy="22" r="6" fill="#FFF3DF"/>' },
+    { id:'hat_hachimaki', name:'はちまき', price:P,
+      svg:'<rect x="31" y="43" width="58" height="8" rx="3" fill="#FFFFFF" stroke="#E3DCC8" stroke-width="1.5"/>'
+        +'<circle cx="60" cy="47" r="4.5" fill="#E0574F"/>'
+        +'<path d="M31 47 L18 42 L20 54 Z" fill="#FFFFFF" stroke="#E3DCC8" stroke-width="1.5"/>' },
+    { id:'hat_headphone', name:'ヘッドホン', price:P,
+      svg:'<path d="M30 58 A30 30 0 0 1 90 58" fill="none" stroke="#555C6E" stroke-width="6"/>'
+        +'<rect x="23" y="52" width="14" height="20" rx="6" fill="#555C6E"/>'
+        +'<rect x="83" y="52" width="14" height="20" rx="6" fill="#555C6E"/>' },
+    { id:'hat_crown', name:'おうかん', price:P,
+      svg:'<path d="M38 42 L44 24 L52 36 L60 20 L68 36 L76 24 L82 42 Z" fill="#FFC93C"/>'
+        +'<rect x="38" y="41" width="44" height="7" rx="3" fill="#F0A500"/>'
+        +'<circle cx="60" cy="44" r="3" fill="#F35247"/>' },
+  ],
+  acc: [
+    { id:'acc_none', name:'なし', price:0, svg:'' },
+    { id:'acc_glasses', name:'メガネ', price:P,
+      svg:'<circle cx="50" cy="60" r="9" fill="none" stroke="#3B3B3B" stroke-width="3"/>'
+        +'<circle cx="70" cy="60" r="9" fill="none" stroke="#3B3B3B" stroke-width="3"/>'
+        +'<path d="M59 60 L61 60" stroke="#3B3B3B" stroke-width="3"/>'
+        +'<path d="M41 58 L33 56 M79 58 L87 56" stroke="#3B3B3B" stroke-width="3" stroke-linecap="round"/>' },
+    { id:'acc_sun', name:'サングラス', price:P,
+      svg:'<rect x="40" y="53" width="18" height="13" rx="5" fill="#2B3A4A"/>'
+        +'<rect x="62" y="53" width="18" height="13" rx="5" fill="#2B3A4A"/>'
+        +'<path d="M58 58 L62 58" stroke="#2B3A4A" stroke-width="3"/>'
+        +'<path d="M40 56 L33 55 M80 56 L87 55" stroke="#2B3A4A" stroke-width="3" stroke-linecap="round"/>' },
+    { id:'acc_mask', name:'マスク', price:P,
+      svg:'<path d="M42 63 L78 63 L75 80 Q60 88 45 80 Z" fill="#FFFFFF" stroke="#DCD6C6" stroke-width="1.5"/>'
+        +'<path d="M42 65 L34 60 M78 65 L86 60" stroke="#DCD6C6" stroke-width="2.5" stroke-linecap="round"/>' },
+    { id:'acc_muffler', name:'マフラー', price:P,
+      svg:'<path d="M38 84 Q60 96 82 84 L84 94 Q60 106 36 94 Z" fill="#F35247"/>'
+        +'<rect x="72" y="92" width="11" height="22" rx="4" fill="#F35247"/>'
+        +'<rect x="72" y="100" width="11" height="4" fill="#fff" opacity=".6"/>' },
+    { id:'acc_bandaid', name:'ばんそうこう', price:P,
+      svg:'<rect x="70" y="64" width="16" height="7" rx="3" fill="#FFD9A8" stroke="#E8B87E" stroke-width="1.2" transform="rotate(-22 78 67)"/>' },
+    { id:'acc_flower', name:'おはな', price:P,
+      svg:'<circle cx="86" cy="42" r="4.5" fill="#FF9DB0"/><circle cx="94" cy="42" r="4.5" fill="#FF9DB0"/>'
+        +'<circle cx="90" cy="36" r="4.5" fill="#FF9DB0"/><circle cx="90" cy="48" r="4.5" fill="#FF9DB0"/>'
+        +'<circle cx="90" cy="42" r="3.4" fill="#FFC93C"/>' },
+  ],
+};
+
+// アバターの初期すがた（生徒が何も選んでいないとき）
+const AVATAR_DEFAULT = { skin:'skin1', hair:'hair_short', face:'face_normal',
+                         body:'body_gym', hat:'hat_none', acc:'acc_none', bg:'bg_cream' };
+
+// アバター1体のSVGを組み立てる
+function avatarSvg(a, size) {
+  a = Object.assign({}, AVATAR_DEFAULT, a || {});
+  const pick = (slot, id) => AV[slot].find(x => x.id === id) || AV[slot][0];
+  const skin = pick('skin', a.skin).color;
+  return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`
+    + pick('bg', a.bg).svg
+    + `<rect x="52" y="72" width="16" height="20" rx="7" fill="${skin}"/>`
+    + pick('body', a.body).svg
+    + `<ellipse cx="60" cy="56" rx="26" ry="28" fill="${skin}"/>`
+    + `<circle cx="35" cy="60" r="5.5" fill="${skin}"/><circle cx="85" cy="60" r="5.5" fill="${skin}"/>`
+    + pick('hair', a.hair).svg + pick('face', a.face).svg
+    + pick('acc', a.acc).svg + pick('hat', a.hat).svg
+    + '</svg>';
+}
+
+</script>
+<script>
+const SLOT_JA = Object.fromEntries(AVATAR_SLOTS);
+
+// 組み合わせの例
+const samples = [
+  { skin:'skin1', bg:'bg_cream',  body:'body_gym',     hair:'hair_short', face:'face_normal', hat:'hat_none', acc:'acc_none' },
+  { skin:'skin1', bg:'bg_sakura', body:'body_tee',     hair:'hair_bob',   face:'face_smile',  hat:'hat_ribbon', acc:'acc_flower' },
+  { skin:'skin2', bg:'bg_sky',    body:'body_hoodie',  hair:'hair_spiky', face:'face_wink',   hat:'hat_cap', acc:'acc_bandaid' },
+  { skin:'skin2', bg:'bg_night',  body:'body_uniform', hair:'hair_long',  face:'face_cool',   hat:'hat_beanie', acc:'acc_glasses' },
+  { skin:'skin3', bg:'bg_rainbow',body:'body_sweater', hair:'hair_twin',  face:'face_star',   hat:'hat_headphone', acc:'acc_muffler' },
+  { skin:'skin1', bg:'bg_gold',   body:'body_cape',    hair:'hair_gold',  face:'face_ganbaru',   hat:'hat_crown', acc:'acc_sun' },
+];
+document.getElementById('samples').innerHTML = samples.map((a,i)=>
+  `<div class="card">${avatarSvg(a,110)}<p class="nm">れい${i+1}</p></div>`).join('');
+
+// きせかえモック
+const me = samples[4];
+document.getElementById('mockAvatar').innerHTML =
+  '<div class="big" style="display:inline-block">'+avatarSvg(me,96)+'</div>';
+document.getElementById('mockGrid').innerHTML = AV.hair.map(h=>{
+  const owned = h.price===0 || h.id==='hair_twin';
+  const sel = h.id===me.hair;
+  const face = { ...me, hair:h.id, bg:'bg_cream' };
+  return `<div class="item ${sel?'sel':''} ${owned?'':'lock'}">${avatarSvg(face,72)}
+    <p class="nm">${h.name}</p>
+    <p class="pr ${owned?'have':''}">${owned?(sel?'そうび中':'もってる'):'🪙'+h.price}</p></div>`;
+}).join('');
+
+// ランキング
+[['r1',samples[4]],['r2',samples[3]],['r3',samples[1]],['r4',samples[2]]].forEach(([id,a])=>{
+  document.getElementById(id).innerHTML = avatarSvg({...a},34);
+});
+
+// パーツ一覧
+document.getElementById('parts').innerHTML = Object.keys(SLOT_JA).map(slot=>{
+  const base = { ...AVATAR_DEFAULT };
+  const items = AV[slot].map(it=>{
+    const a = { ...base, [slot]: it.id };
+    return `<div class="card">${avatarSvg(a,84)}<p class="nm">${it.name}</p>
+      <p class="pr ${it.price===0?'free':''}">${it.price===0?'さいしょから':'🪙'+it.price}</p></div>`;
+  }).join('');
+  return `<h2>${SLOT_JA[slot]}</h2><div class="row">${items}</div>`;
+}).join('');
+</script>
+</body></html>
