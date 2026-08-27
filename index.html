@@ -846,8 +846,11 @@ const SUBJECTS = [
    units:{
      '中1':['Unit1','Unit2','Unit3','言語活動1','Unit4','言語活動2','Unit5','言語活動3','Unit6','言語活動4','Unit7','言語活動5','Unit8','言語活動7'],
      '中2':['Unit1','言語活動1','Unit2','言語活動2','Unit3','言語活動3','言語活動4','Unit4','言語活動5','Unit5','言語活動6','Unit6','言語活動7','言語活動8','Unit7','言語活動9','Unit8','言語活動10','言語活動11','LetsReadMore'],
-     '中3':['Unit1','Unit2','言語活動2-3','Unit3','Unit4','言語活動4-5','Unit5','言語活動6','Unit6','LetsRead2','LetsRead3']
+     '中3':['Unit1','Unit2','言語活動2-3','Unit3','Unit4','言語活動4-5','Unit5','言語活動6','Unit6','LetsRead2','LetsRead3'],
+     // 学年に属さない受験用の単語集。学年ボタンと並べて出す（extraGrades）
+     '英単語1000':['ZONE1','ZONE2','ZONE3','ZONE4','ZONE5']
    },
+   extraGrades:[{ key:'英単語1000', note:'入試の基本1000語・ZONE1〜5' }],
    korekore:{
      '中1':['Part1','Part2','Part3','Part4','Part5','Part6','Part7','Part8']
    }},
@@ -1063,19 +1066,26 @@ function showGrades(s, unit){
 
 // 学年選択（英語：学年が先）→ 選ぶと 教科書/これだけ の選択、無ければUnit一覧へ
 function showGradeList(s){
-  $('tpTitle').textContent = s.nm + '｜学年をえらぶ';
+  $('tpTitle').textContent = s.nm + ((s.extraGrades||[]).length ? '｜学年・教材をえらぶ' : '｜学年をえらぶ');
   const wrap = $('tpGrid'); wrap.innerHTML='';
-  GRADES.forEach(g=>{
+  const mkBtn = (label, note, onClick)=>{
     const b = document.createElement('button');
     b.className = 'topicbtn';
-    b.innerHTML = '<span>'+g+'</span><i class="ti ti-chevron-right"></i>';
+    b.innerHTML = '<span>'+label
+      + (note ? '<span style="display:block; font-size:12px; color:var(--muted2); font-weight:600; margin-top:2px;">'+note+'</span>' : '')
+      + '</span><i class="ti ti-chevron-right"></i>';
+    b.addEventListener('click', onClick);
+    wrap.appendChild(b);
+  };
+  GRADES.forEach(g=>{
     // 「これだけ」がある学年は 教科書/これだけ の選択へ。無ければ直接Unit一覧へ
-    b.addEventListener('click', ()=>{
+    mkBtn(g, '', ()=>{
       if(s.korekore && s.korekore[g]) showCollections(s, g);
       else showUnits(s, g);
     });
-    wrap.appendChild(b);
   });
+  // 学年に属さない教材（英語の「英単語1000」など）を学年の下に並べる
+  (s.extraGrades||[]).forEach(x=> mkBtn(x.key, x.note, ()=> showUnits(s, x.key)));
   topicsBack = ()=>{ show('menu'); renderMenu(); };
   show('topics');
 }
